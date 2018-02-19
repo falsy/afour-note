@@ -1,0 +1,1 @@
+export const APIURL = 'https://us-central1-afour-note.cloudfunctions.net';

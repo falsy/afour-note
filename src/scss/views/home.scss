@@ -1,0 +1,63 @@
+.module {
+  margin: 0 0 0 12px;
+  padding: 3px 18px;
+  font-weight: bold;
+  color: #fff;
+  background: green;
+  display: inline-block
+}
+
+.intro {
+  width: 300px;
+  margin: 15% auto;
+  background: #fff;
+  padding: 30px 20px 40px;
+  box-shadow: 1px 1px 15px 0px rgba(0,0,0,0.1);
+
+  h1 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    span {
+      font-size: 9px;
+      color: #33c1ab;
+      vertical-align: top;
+      font-style: italic;
+      line-height: 24px;
+      margin-left: 4px;
+    }
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: #999;
+    span {
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    line-height: 38px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+
+  button {
+    display: block;
+    border: 0;
+    width: 100%;
+    font-size: 14px;
+    line-height: 40px;
+    color: #fff;
+    background: #33c1ab;
+    cursor: pointer;
+    &:hover {
+      background: #2ab39e;
+    }
+  }
+}

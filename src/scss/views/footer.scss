@@ -1,0 +1,12 @@
+.footer {
+	position: absolute;
+	bottom: 4px;
+	height: 76px;
+	line-height: 76px;
+	& > div {
+		padding: 0 40px;
+		p {
+			font-size: 12px;
+		}
+	}
+}

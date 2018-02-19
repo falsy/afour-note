@@ -1,0 +1,11 @@
+// Clearfix
+:global(.clearfix:after) {
+  content: "";
+  display: table;
+  clear: both
+}
+
+// Container
+:global(.container) {
+
+}
