@@ -1,3 +1,4 @@
+@import "~variables";
 
 .textarea-position {
   position: absolute;
@@ -41,8 +42,9 @@
     padding: 0 10%;
     p {
       float: left;
+      margin-top: 2px;
       padding-left: 1px;
-      font-size: 12px;
+      font-size: 10px;
       color: #ccc;
     }
     li {
@@ -53,12 +55,11 @@
       margin-right: 0;
     }
     button {
-      font-size: 14px;
+      font-size: 15px;
       background: inherit;
       padding: 9px 20px;
-      margin: 5px 0 0 0;
       border: 0;
-      color: #33c1ab;
+      color: $point;
       cursor: pointer;
       &:hover {
         background: #eaeaea;
@@ -79,12 +80,12 @@
   position: absolute;
   width: 0;
   height: 100%;
-  background: #33c1ab;
+  background: $point;
 }
 
 .start {
-  transition: width 3s;
-  width: 90%;
+  transition: width 4s;
+  width: 95%;
 }
 
 .end {

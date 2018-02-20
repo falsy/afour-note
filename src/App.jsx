@@ -6,9 +6,10 @@ import './scss/app';
 
 import Home from './views/Home';
 import Note from './views/Note';
+import PrivateNote from './views/PrivateNote';
 
 export default class App extends Component {
-  
+
   render() {
     return (
       <Provider store={store}>
@@ -18,6 +19,7 @@ export default class App extends Component {
               <Switch>
                 <Route exact path="/" component={Home} />
                 <Route exact path="/:noteName" component={Note} />
+                <Route exact path="/secret/:noteName" component={PrivateNote} />
               </Switch>
             </div>
           </div>

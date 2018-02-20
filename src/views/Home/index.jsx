@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { secret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import Styles from '../../scss/views/home';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
 
-export default class extends Component {
+class Home extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      noteName: ''
+      noteName: '',
+      password: ''
     };
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
@@ -19,11 +22,15 @@ export default class extends Component {
     let changeState = {};
     changeState[e.target.name] = e.target.value;
     this.setState(changeState);
+    if(e.target.name === 'password') {
+      const { dispatch } = this.props;
+      dispatch(secret(e.target.value));
+    }
   }
 
   keyDown(e) {
     if(e.keyCode === 13) {
-      e.target.parentElement.nextSibling.click();
+      e.target.parentElement.parentElement.nextSibling.click();
     }
   }
 
@@ -36,13 +43,29 @@ export default class extends Component {
           </div>
           <div>
             <label>
-            <span>note name</span>
-            <input autoFocus type="text" name="noteName" onChange={this.changeValue} onKeyDown={this.keyDown} />
+              <span>이름만 쓰면 바로 메모장을 사용할 수 있습니다.</span>
+              <input autoFocus type="text" name="noteName" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="note name *"/>
             </label>
-            <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink>
+            <label>
+              <span>비밀번호까지 쓰면 나만의 메모장으로 사용할 수 있습니다.</span>
+              <input type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="password"/>
+            </label>
           </div>
+            { 
+              this.props.secret.password ? 
+              <NavLink to={`/secret/${this.state.noteName}`}><button>secret enter</button></NavLink>
+              : <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink> 
+            }
         </div>
       </div>
     )
   }
 }
+
+const mstp = (state) => {
+  return {
+    secret : state.secret
+  };
+}
+
+export default connect(mstp)(Home);

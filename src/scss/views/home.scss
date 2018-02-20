@@ -1,3 +1,5 @@
+@import "~variables";
+
 .module {
   margin: 0 0 0 12px;
   padding: 3px 18px;
@@ -8,8 +10,8 @@
 }
 
 .intro {
-  width: 300px;
-  margin: 15% auto;
+  width: 360px;
+  margin: 10% auto;
   background: #fff;
   padding: 30px 20px 40px;
   box-shadow: 1px 1px 15px 0px rgba(0,0,0,0.1);
@@ -19,7 +21,7 @@
     margin-bottom: 20px;
     span {
       font-size: 9px;
-      color: #33c1ab;
+      color: $point;
       vertical-align: top;
       font-style: italic;
       line-height: 24px;
@@ -29,35 +31,42 @@
 
   label {
     display: block;
-    font-size: 13px;
-    color: #999;
     span {
       display: block;
-      margin-bottom: 5px;
+      font-size: 10px;
+      margin-top: 5px;
+      padding: 0 2px 4px;
+      color: #757575;
     }
   }
 
   input {
+    color: #111;
     display: block;
     width: 100%;
-    font-size: 16px;
-    line-height: 38px;
+    font-size: 15px;
+    line-height: 46px;
     padding: 0 10px;
     border: 1px solid #ddd;
     margin-bottom: 10px;
+  }
+
+  label + label input {
+    margin-bottom: 15px;
   }
 
   button {
     display: block;
     border: 0;
     width: 100%;
-    font-size: 14px;
-    line-height: 40px;
+    font-size: 15px;
+    line-height: 44px;
     color: #fff;
-    background: #33c1ab;
+    background: $point;
     cursor: pointer;
+    transition: background 0.3s;
     &:hover {
-      background: #2ab39e;
+      background: $point-dark;
     }
   }
 }
