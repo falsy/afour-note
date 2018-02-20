@@ -77,7 +77,7 @@ class Note extends Component {
           <div className={cx('textarea-position')}>
             <div>
               <form>
-                <textarea name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
+                <textarea autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
               </form>
             </div>
           </div>

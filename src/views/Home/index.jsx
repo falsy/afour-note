@@ -43,11 +43,11 @@ class Home extends Component {
           </div>
           <div>
             <label>
-              <span>이름만 쓰면 바로 메모장을 사용할 수 있습니다.</span>
+              <span>노트의 이름만 정하면 바로 사용할 수 있습니다.</span>
               <input autoFocus type="text" name="noteName" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="note name *"/>
             </label>
             <label>
-              <span>비밀번호까지 쓰면 나만의 메모장으로 사용할 수 있습니다.</span>
+              <span>비밀번호 입력시 비밀노트로 사용할 수 있습니다.</span>
               <input type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="password"/>
             </label>
           </div>

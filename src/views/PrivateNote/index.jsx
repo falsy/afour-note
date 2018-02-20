@@ -15,7 +15,7 @@ class Note extends Component {
     const { dispatch } = this.props;
     dispatch(getSecret());
     if(this.props.secret.password === '') return location.pathname = '/';
-    
+
     this.state = {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
@@ -86,7 +86,7 @@ class Note extends Component {
           <div className={cx('textarea-position')}>
             <div>
               <form>
-                <textarea name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
+                <textarea autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
               </form>
             </div>
           </div>
