@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { secret } from '../../actions/secret';
+import { secret, resetSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import Styles from '../../scss/views/home';
 import classNames from 'classnames/bind';
@@ -16,6 +16,11 @@ class Home extends Component {
     };
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    
+    if(this.props.secret.password) {
+      const { dispatch } = this.props;
+      dispatch(resetSecret());
+    }
   }
 
   changeValue(e) {

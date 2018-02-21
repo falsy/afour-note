@@ -1,4 +1,4 @@
-import { SECRET, GETSECRET } from '../constants/secret';
+import { SECRET, GET_SECRET, RESET_SECRET} from '../constants/secret';
 
 export function secret(password) {
   return {
@@ -8,7 +8,13 @@ export function secret(password) {
 }
 
 export function getSecret() {
-	return {
-		type: GETSECRET
-	}
+  return {
+    type: GET_SECRET
+  }
+}
+
+export function resetSecret() {
+  return {
+    type: RESET_SECRET
+  }
 }

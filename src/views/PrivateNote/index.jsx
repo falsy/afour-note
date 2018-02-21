@@ -14,14 +14,15 @@ class Note extends Component {
     super(props);
     const { dispatch } = this.props;
     dispatch(getSecret());
-    if(this.props.secret.password === '') return location.pathname = '/';
-
     this.state = {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
       textarea: '',
       loading: null
     };
+    if(this.props.secret.password === '') {
+      return this.props.history.push('/');
+    }
     this.changeValue = this.changeValue.bind(this);
     this.submitValue = this.submitValue.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
@@ -31,9 +32,8 @@ class Note extends Component {
 
   initValue() {
     setTimeout(() => this.changeLoading(true));
-    axios.put(APIURL+'/getNoteText?noteName='+this.state.noteName, {
-      password: this.state.password
-      }).then((res) => {
+    axios.get(APIURL+'/getNoteText?noteName='+this.state.noteName+'&password='+this.state.password
+      ).then((res) => {
         if(typeof res.data.text !== 'undefined') this.updateValue(res.data.text);
         else this.changeLoading(false);
       }).catch((err) => {
