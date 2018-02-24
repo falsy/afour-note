@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { getSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import {APIURL} from '../../constants/config.constant';
 import axios from 'axios';
@@ -10,11 +12,17 @@ class Note extends Component {
 
   constructor(props) {
     super(props);
+    const { dispatch } = this.props;
+    dispatch(getSecret());
     this.state = {
       noteName: this.props.match.params.noteName,
+      password: this.props.secret.password,
       textarea: '',
       loading: null
     };
+    if(this.props.secret.password === '') {
+      return this.props.history.push('/');
+    }
     this.changeValue = this.changeValue.bind(this);
     this.submitValue = this.submitValue.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
@@ -24,8 +32,9 @@ class Note extends Component {
 
   initValue() {
     setTimeout(() => this.changeLoading(true));
-    axios.get(APIURL+'/getPublicNote?noteName='+this.state.noteName)
-      .then((res) => {
+    axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
+      password: this.state.password
+      }).then((res) => {
         if(typeof res.data.text !== 'undefined') this.updateValue(res.data.text);
         else this.changeLoading(false);
       }).catch((err) => {
@@ -60,7 +69,8 @@ class Note extends Component {
 
   submitValue(e) {
     this.changeLoading(true);
-    axios.put(APIURL+'/updatePublicNote?noteName='+this.state.noteName, {
+    axios.put(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
+      password: this.state.password,
       textVal: this.state.textarea
       }).then((res) => {
         this.changeLoading(false);
@@ -98,4 +108,12 @@ class Note extends Component {
     )
   }
 }
-export default Note;
+
+
+const mstp = (state) => {
+  return {
+    secret : state.secret
+  };
+}
+
+export default connect(mstp)(Note);

@@ -48,19 +48,16 @@ class Home extends Component {
           </div>
           <div>
             <label>
-              <span>노트의 이름만 정하면 바로 사용할 수 있습니다.</span>
-              <input autoFocus type="text" name="noteName" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="note name *"/>
+              <span>note name</span>
+              <input autoFocus type="text" name="noteName" onChange={this.changeValue} />
             </label>
             <label>
-              <span>비밀번호 입력시 비밀노트로 사용할 수 있습니다.</span>
-              <input type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} placeholder="password"/>
+              <span>password</span>
+              <input type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} />
             </label>
           </div>
-            { 
-              this.props.secret.password ? 
-              <NavLink to={`/secret/${this.state.noteName}`}><button>secret enter</button></NavLink>
-              : <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink> 
-            }
+            <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink>
+            <span>별도의 회원가입 없이 노트의 이름과 비밀번호만 정하면<br /> 바로 나만의 메모장이 만들어 집니다.</span>
         </div>
       </div>
     )

@@ -11,7 +11,7 @@
 
 .intro {
   width: 360px;
-  margin: 10% auto;
+  margin: 9% auto 0;
   background: #fff;
   padding: 30px 30px 45px;
   box-shadow: 1px 1px 15px 0px rgba(0,0,0,0.1);
@@ -33,7 +33,7 @@
     display: block;
     span {
       display: block;
-      font-size: 10px;
+      font-size: 13px;
       margin-top: 5px;
       padding: 0 2px 4px;
       color: #757575;
@@ -44,7 +44,7 @@
     color: #111;
     display: block;
     width: 100%;
-    font-size: 15px;
+    font-size: 13px;
     line-height: 40px;
     padding: 0 10px;
     border: 1px solid #ddd;
@@ -53,6 +53,15 @@
 
   label + label input {
     margin-bottom: 15px;
+  }
+
+  a + span {
+    display: block;
+    font-size: 12px;
+    padding: 0 2px;
+    margin-top: 10px;
+    line-height: 20px;
+    color: #757575;
   }
 
   button {
