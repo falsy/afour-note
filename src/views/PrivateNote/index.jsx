@@ -32,8 +32,9 @@ class Note extends Component {
 
   initValue() {
     setTimeout(() => this.changeLoading(true));
-    axios.get(APIURL+'/getNoteText?noteName='+this.state.noteName+'&password='+this.state.password
-      ).then((res) => {
+    axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
+      password: this.state.password
+      }).then((res) => {
         if(typeof res.data.text !== 'undefined') this.updateValue(res.data.text);
         else this.changeLoading(false);
       }).catch((err) => {
@@ -68,7 +69,7 @@ class Note extends Component {
 
   submitValue(e) {
     this.changeLoading(true);
-    axios.put(APIURL+'/updateNoteText?noteName='+this.state.noteName, {
+    axios.put(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
       password: this.state.password,
       textVal: this.state.textarea
       }).then((res) => {

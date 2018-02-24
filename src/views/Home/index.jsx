@@ -16,7 +16,7 @@ class Home extends Component {
     };
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
-    
+
     if(this.props.secret.password) {
       const { dispatch } = this.props;
       dispatch(resetSecret());

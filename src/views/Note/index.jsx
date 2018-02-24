@@ -24,7 +24,7 @@ class Note extends Component {
 
   initValue() {
     setTimeout(() => this.changeLoading(true));
-    axios.get(APIURL+'/getNoteText?noteName='+this.state.noteName)
+    axios.get(APIURL+'/getPublicNote?noteName='+this.state.noteName)
       .then((res) => {
         if(typeof res.data.text !== 'undefined') this.updateValue(res.data.text);
         else this.changeLoading(false);
@@ -60,7 +60,7 @@ class Note extends Component {
 
   submitValue(e) {
     this.changeLoading(true);
-    axios.put(APIURL+'/updateNoteText?noteName='+this.state.noteName, {
+    axios.put(APIURL+'/updatePublicNote?noteName='+this.state.noteName, {
       textVal: this.state.textarea
       }).then((res) => {
         this.changeLoading(false);
