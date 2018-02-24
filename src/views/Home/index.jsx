@@ -57,7 +57,7 @@ class Home extends Component {
             </label>
           </div>
             <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink>
-            <span>별도의 회원가입 없이 노트의 이름과 비밀번호만 정하면<br /> 바로 나만의 메모장이 만들어 집니다.</span>
+            <span>회원가입 없이 노트의 이름과 비밀번호만 정하면<br /> 바로 나만의 메모장이 만들어 집니다.</span>
         </div>
       </div>
     )
