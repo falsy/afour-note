@@ -1,4 +1,5 @@
 @import "~variables";
+@import '~respond';
 
 .textarea-position {
   position: absolute;
@@ -10,12 +11,55 @@
     width: 100%;
     height: 100%;
     padding: 40px 10% 100px;
+    @include respond(phone-landscape) {
+     padding: 20px 5% 100px;
+    }
+    @include respond(phone-portrait) {
+     padding: 20px 5% 100px;
+    }
 
     & > form {
       position: relative;
-      width: 100%;
+      width: 80%;
       height: 100%;
+      float: left;
       box-shadow: 1px 1px 15px 0px rgba(0,0,0,0.1);
+    }
+
+    .text-list {
+      float: left;
+      width: 18%;
+      height: 100%;
+      margin-left: 2%;
+
+      & > div {
+        background: #fff;
+        font-size: 12px;
+        padding: 10px;
+        box-shadow: 1px 1px 15px 0px rgba(0,0,0,0.1);
+        cursor: pointer;
+        margin-bottom: 10%;
+        & > p {
+          height: 55px;
+          overflow: hidden;
+          word-wrap: break-word;
+          display: -webkit-box; 
+          -webkit-line-clamp: 3; 
+          -webkit-box-orient: vertical;
+        }
+
+        &.add-text-list {
+          font-size: 22px;
+          text-align: center;
+          padding: 5px 0;
+        }
+      }
+    }
+
+    &:after {
+      content: '';
+      clear: both;
+      display: block;
     }
   }
 }

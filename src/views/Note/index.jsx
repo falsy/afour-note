@@ -17,7 +17,10 @@ class Note extends Component {
     this.state = {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
+      nowIndex: 0,
       textarea: '',
+      textArr: [],
+      options: {},
       loading: null
     };
     if(this.props.secret.password === '') {
@@ -26,6 +29,9 @@ class Note extends Component {
     this.changeValue = this.changeValue.bind(this);
     this.submitValue = this.submitValue.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
+    this.choiceText = this.choiceText.bind(this);
+    this.defaultDataUpdate = this.defaultDataUpdate.bind(this);
+    this.addNewTextList = this.addNewTextList.bind(this);
     this.initValue = this.initValue.bind(this);
     this.initValue();
   }
@@ -35,11 +41,25 @@ class Note extends Component {
     axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
       password: this.state.password
       }).then((res) => {
-        if(typeof res.data.text !== 'undefined') this.updateValue(res.data.text);
-        else this.changeLoading(false);
+        if(typeof res.data.textArr !== 'undefined') {
+          this.updateValue(res.data.textArr);
+          this.initNewText(res.data.textArr);
+        } else {
+          this.changeLoading(false);
+          this.initNewText();
+        }
       }).catch((err) => {
         console.log('api error : ' + err);
       });
+  }
+
+  initNewText(text = []) {
+    let updateValue = {};
+    updateValue.nowIndex = text.length;
+    updateValue.textarea = '';
+    updateValue.textArr = this.state.textArr;
+    updateValue.textArr.push('');
+    this.setState(updateValue);
   }
 
   changeValue(e) {
@@ -56,16 +76,47 @@ class Note extends Component {
 
   updateValue(val) {
     let updateValue = {};
-    updateValue.textarea = val;
+    updateValue.textArr = val;
+    updateValue.newIndex = val.length;
     this.setState(updateValue);
     this.changeLoading(false);
   }
 
+  defaultDataUpdate(submit=false) {
+    let defaultValue = {};
+    defaultValue.textArr = this.state.textArr;
+    if(this.state.textarea === '' && !submit) {
+      defaultValue.textArr.splice(this.state.nowIndex, 1);
+    } else {
+      defaultValue.textArr[this.state.nowIndex] = this.state.textarea;
+    }
+    this.setState(defaultValue);
+  }
+
+  choiceText(i) {
+    if(this.state.nowIndex === i) return document.getElementById('textarea').focus();
+    this.defaultDataUpdate();
+
+    let updateValue = {};
+    updateValue.nowIndex = i;
+    updateValue.textarea = this.state.textArr[i];
+    this.setState(updateValue);
+    document.getElementById('textarea').focus();
+  }
+
+  addNewTextList() {
+    this.defaultDataUpdate();
+    this.initNewText(this.state.textArr);
+    document.getElementById('textarea').focus();
+  }
+
   submitValue(e) {
+    this.defaultDataUpdate(true);
     this.changeLoading(true);
     axios.put(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
       password: this.state.password,
-      textVal: this.state.textarea
+      textArr: this.state.textArr,
+      options: this.state.options
       }).then((res) => {
         this.changeLoading(false);
       }).catch((err) => {
@@ -81,8 +132,22 @@ class Note extends Component {
           <div className={cx('textarea-position')}>
             <div>
               <form>
-                <textarea autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
+                <textarea id="textarea" autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
               </form>
+              <div className={cx('text-list')}>
+                {this.state.textArr.length ? this.state.textArr.map((text, index) => {
+                  return (
+                    <div key={index} onClick={this.choiceText.bind(this, index)}>
+                      <p>{text.substring(0, 99)}</p>
+                    </div>
+                  )
+                }) : ''}
+                {this.state.textArr.length < 5 ?
+                <div className={cx('add-text-list')} onClick={this.addNewTextList}>
+                  <span>+</span>
+                </div>
+                : '' }
+              </div>
             </div>
           </div>
           <div className={cx('navigation')}>
