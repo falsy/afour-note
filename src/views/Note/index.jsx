@@ -52,12 +52,6 @@ class Note extends Component {
     let changeLoading = {};
     changeLoading.loading = status;
     this.setState(changeLoading);
-    if(status === false) {
-      setTimeout(() => {
-        changeLoading.loading = null;
-        this.setState(changeLoading);
-      }, 600);
-    }
   }
 
   updateValue(val) {
@@ -102,7 +96,7 @@ class Note extends Component {
           </div>
         </div>
         <div className={cx('loading-box')}>
-          <div className={this.state.loading === null ? cx('wait') : this.state.loading ? cx('wait', 'start') : cx('wait', 'loading', 'end')}></div>
+          <div className={this.state.loading === null ? '' : this.state.loading ? cx('start') : cx('loading', 'end')}></div>
         </div>
       </div>
     )

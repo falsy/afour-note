@@ -73,22 +73,26 @@
   bottom: 0;
   height: 4px;
   width: 100%;
+  & > div {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    background: $point;
+    opacity: 1;
+    &.start {
+      transition: width 3s;
+      width: 96%;
+    }
+    &.end {
+      animation-name: loadingEnd;
+      animation-duration: 1s;
+    }
+  }
 }
 
-
-.wait {
-  position: absolute;
-  width: 0;
-  height: 100%;
-  background: $point;
-}
-
-.start {
-  transition: width 4s;
-  width: 95%;
-}
-
-.end {
-  transition: width 0.1s;
-  width: 100%;
+@keyframes loadingEnd {
+  0% {width: 96%;}
+  20% {width: 100%;}
+  80% {opacity: 0;}
+  100% {opacity: 0; width: 0;}
 }
