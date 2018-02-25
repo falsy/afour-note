@@ -30,6 +30,7 @@
   padding: 20px;
   font-size: 14px;
   line-height: 26px;
+  resize: none;
 }
 
 .navigation {
@@ -79,6 +80,7 @@
     height: 100%;
     background: $point;
     opacity: 1;
+
     &.start {
       transition: width 3s;
       width: 96%;
@@ -93,6 +95,5 @@
 @keyframes loadingEnd {
   0% {width: 96%;}
   20% {width: 100%;}
-  80% {opacity: 0;}
-  100% {opacity: 0; width: 0;}
+  100% {opacity: 0; width: 100%;}
 }

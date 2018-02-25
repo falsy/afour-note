@@ -16,6 +16,7 @@ class Home extends Component {
     };
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    this.valueCheck = this.valueCheck.bind(this);
 
     if(this.props.secret.password) {
       const { dispatch } = this.props;
@@ -35,7 +36,17 @@ class Home extends Component {
 
   keyDown(e) {
     if(e.keyCode === 13) {
-      e.target.parentElement.parentElement.nextSibling.click();
+      // if(this.state.password) e.target.parentElement.parentElement.nextSibling.click();
+      if(this.state.password) document.getElementById('submit-btn').click();
+      else e.target.focus();
+      e.preventDefault();
+    }
+  }
+
+  valueCheck(e) {
+    if(!this.state.password) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
@@ -53,10 +64,10 @@ class Home extends Component {
             </label>
             <label>
               <span>password</span>
-              <input type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} />
+              <input id="password" type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} />
             </label>
           </div>
-            <NavLink to={`/${this.state.noteName}`}><button>enter</button></NavLink>
+            <NavLink id="submit-btn" to={`/${this.state.noteName}`}><button onClick={this.valueCheck}>enter</button></NavLink>
             <span>회원가입 없이 노트의 이름과 비밀번호만 정하면<br /> 바로 나만의 메모장이 만들어 집니다.</span>
         </div>
       </div>
