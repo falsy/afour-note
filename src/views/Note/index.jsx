@@ -28,6 +28,7 @@ class Note extends Component {
     }
     this.changeValue = this.changeValue.bind(this);
     this.submitValue = this.submitValue.bind(this);
+    this.deleteNote = this.deleteNote.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.defaultDataUpdate = this.defaultDataUpdate.bind(this);
@@ -43,7 +44,6 @@ class Note extends Component {
       }).then((res) => {
         if(typeof res.data.textArr !== 'undefined') {
           this.updateValue(res.data.textArr);
-          this.initNewText(res.data.textArr);
         } else {
           this.changeLoading(false);
           this.initNewText();
@@ -77,7 +77,8 @@ class Note extends Component {
   updateValue(val) {
     let updateValue = {};
     updateValue.textArr = val;
-    updateValue.newIndex = val.length;
+    updateValue.newIndex = 0;
+    updateValue.textarea = val[0];
     this.setState(updateValue);
     this.changeLoading(false);
   }
@@ -95,12 +96,26 @@ class Note extends Component {
 
   choiceText(i) {
     if(this.state.nowIndex === i) return document.getElementById('textarea').focus();
-    this.defaultDataUpdate();
-
     let updateValue = {};
     updateValue.nowIndex = i;
     updateValue.textarea = this.state.textArr[i];
     this.setState(updateValue);
+    document.getElementById('textarea').focus();
+  }
+
+  deleteNote() {
+    let deleteValue = {};
+    if(this.state.textArr.length === 1) {
+      deleteValue.textArr = [''];
+      deleteValue.nowIndex = 0;
+      deleteValue.textarea = '';
+    } else {
+      deleteValue.textArr = this.state.textArr;
+      deleteValue.textArr.splice(this.state.nowIndex, 1);
+      deleteValue.nowIndex = this.state.nowIndex !== 0 ? 0 : 1;
+      deleteValue.textarea = this.state.textArr[deleteValue.nowIndex];
+    }
+    this.setState(deleteValue);
     document.getElementById('textarea').focus();
   }
 
@@ -137,7 +152,7 @@ class Note extends Component {
               <div className={cx('text-list')}>
                 {this.state.textArr.length ? this.state.textArr.map((text, index) => {
                   return (
-                    <div key={index} onClick={this.choiceText.bind(this, index)}>
+                    <div key={index} onClick={this.choiceText.bind(this, index)} className={this.state.nowIndex === index ? cx('active') : ''}>
                       <p>{text.substring(0, 99)}</p>
                     </div>
                   )
@@ -155,6 +170,7 @@ class Note extends Component {
               <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
               <ul className={'clearfix'}>
                 <li><button onClick={this.submitValue}>save</button></li>
+                <li><button onClick={this.deleteNote}>delete</button></li>
                 <li><NavLink to="/"><button>back</button></NavLink></li>
               </ul>
             </div>

@@ -36,7 +36,6 @@ class Home extends Component {
 
   keyDown(e) {
     if(e.keyCode === 13) {
-      // if(this.state.password) e.target.parentElement.parentElement.nextSibling.click();
       if(this.state.password) document.getElementById('submit-btn').click();
       else e.target.focus();
       e.preventDefault();
@@ -55,7 +54,7 @@ class Home extends Component {
       <div className="container">
         <div className={cx('intro')}>
           <div>
-            <h1>afour<span>beta</span></h1>
+            <h1>afour<span>alpha</span></h1>
           </div>
           <div>
             <label>
