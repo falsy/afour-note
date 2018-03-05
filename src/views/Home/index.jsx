@@ -66,8 +66,7 @@ class Home extends Component {
               <input id="password" type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} />
             </label>
           </div>
-            <NavLink id="submit-btn" to={`/${this.state.noteName}`}><button onClick={this.valueCheck}>enter</button></NavLink>
-            <span>회원가입 없이 노트의 이름과 비밀번호만 정하면<br /> 바로 나만의 메모장이 만들어 집니다.</span>
+          <NavLink id="submit-btn" to={`/${this.state.noteName}`}><button onClick={this.valueCheck}>enter</button></NavLink>
         </div>
       </div>
     )

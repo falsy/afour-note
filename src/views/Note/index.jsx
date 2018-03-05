@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import {APIURL} from '../../constants/config.constant';
+import Header from '../Header';
 import axios from 'axios';
 import Styles from '../../scss/views/note';
 import classNames from 'classnames/bind';
@@ -17,22 +18,24 @@ class Note extends Component {
     this.state = {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
-      nowIndex: 0,
+      nowIndex: [0, 0],
       textarea: '',
-      textArr: [],
+      textDataGroup: ['default'],
+      textDataMemo: [['']],
       options: {},
+      addGroupMode: false,
+      addGroupName: '',
       loading: null
     };
     if(this.props.secret.password === '') {
       return this.props.history.push('/');
     }
+    this.addGroupValue = this.addGroupValue.bind(this);
+    this.insertNewGroup = this.insertNewGroup.bind(this);
+    this.insertNewMemo = this.insertNewMemo.bind(this);
     this.changeValue = this.changeValue.bind(this);
-    this.submitValue = this.submitValue.bind(this);
-    this.deleteNote = this.deleteNote.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
-    this.defaultDataUpdate = this.defaultDataUpdate.bind(this);
-    this.addNewTextList = this.addNewTextList.bind(this);
     this.initValue = this.initValue.bind(this);
     this.initValue();
   }
@@ -42,29 +45,26 @@ class Note extends Component {
     axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
       password: this.state.password
       }).then((res) => {
-        if(typeof res.data.textArr !== 'undefined') {
-          this.updateValue(res.data.textArr);
-        } else {
+        if(res.data.options === null) {
           this.changeLoading(false);
-          this.initNewText();
+        } else {
+          this.initDataValue(res.data.textObj);
         }
       }).catch((err) => {
         console.log('api error : ' + err);
       });
   }
 
-  initNewText(text = []) {
-    let updateValue = {};
-    updateValue.nowIndex = text.length;
-    updateValue.textarea = '';
-    updateValue.textArr = this.state.textArr;
-    updateValue.textArr.push('');
-    this.setState(updateValue);
-  }
-
   changeValue(e) {
     let changeState = {};
     changeState[e.target.name] = e.target.value;
+    if(e.target.name === 'textarea') {
+      const nowGroup = this.state.nowIndex[0];
+      const nowMemo = this.state.nowIndex[1];
+      let baseTextMemo = this.state.textDataMemo;
+      baseTextMemo[nowGroup][nowMemo] = e.target.value;
+      changeState.textDataMemo = baseTextMemo;
+    }
     this.setState(changeState);
   }
 
@@ -74,105 +74,114 @@ class Note extends Component {
     this.setState(changeLoading);
   }
 
-  updateValue(val) {
-    let updateValue = {};
-    updateValue.textArr = val;
-    updateValue.newIndex = 0;
-    updateValue.textarea = val[0];
-    this.setState(updateValue);
+  initDataValue(val) {
+    let initValue = {
+      textDataGroup: [],
+      textDataMemo: [],
+      textarea: '',
+    };
+    let idx = 0;
+    for(let group in val) {
+      initValue.textDataGroup.push(group);
+      initValue.textDataMemo.push([]);
+      for(let i=0; i<val[group].length; i++) {
+        initValue.textDataMemo[idx].push(val[group][i]);
+      }
+      idx++;
+    }
+    initValue.textarea = initValue.textDataMemo[0][0];
+    this.setState(initValue);
     this.changeLoading(false);
   }
 
-  defaultDataUpdate(submit=false) {
-    let defaultValue = {};
-    defaultValue.textArr = this.state.textArr;
-    if(this.state.textarea === '' && !submit) {
-      defaultValue.textArr.splice(this.state.nowIndex, 1);
-    } else {
-      defaultValue.textArr[this.state.nowIndex] = this.state.textarea;
+  choiceText(groupIdx, memoIdx) {
+    if(this.state.nowIndex[0] === groupIdx && this.state.nowIndex[1] === memoIdx) {
+      return document.getElementById('textarea').focus();
     }
-    this.setState(defaultValue);
-  }
 
-  choiceText(i) {
-    if(this.state.nowIndex === i) return document.getElementById('textarea').focus();
     let updateValue = {};
-    updateValue.nowIndex = i;
-    updateValue.textarea = this.state.textArr[i];
+    updateValue.nowIndex = [groupIdx, memoIdx];
+    updateValue.textarea = this.state.textDataMemo[groupIdx][memoIdx];
     this.setState(updateValue);
     document.getElementById('textarea').focus();
   }
 
-  deleteNote() {
-    let deleteValue = {};
-    if(this.state.textArr.length === 1) {
-      deleteValue.textArr = [''];
-      deleteValue.nowIndex = 0;
-      deleteValue.textarea = '';
-    } else {
-      deleteValue.textArr = this.state.textArr;
-      deleteValue.textArr.splice(this.state.nowIndex, 1);
-      deleteValue.nowIndex = this.state.nowIndex !== 0 ? 0 : 1;
-      deleteValue.textarea = this.state.textArr[deleteValue.nowIndex];
-    }
-    this.setState(deleteValue);
-    document.getElementById('textarea').focus();
+  addGroupValue() {
+    if(this.state.addGroupMode) return;
+    this.setState({addGroupMode: true});
   }
 
-  addNewTextList() {
-    this.defaultDataUpdate();
-    this.initNewText(this.state.textArr);
-    document.getElementById('textarea').focus();
+  insertNewGroup() {
+    let baseTextGroup = this.state.textDataGroup.concat(this.state.addGroupName);
+    let baseTextMemo = this.state.textDataMemo.concat([[]])
+    this.setState({
+      textDataGroup: baseTextGroup,
+      textDataMemo: baseTextMemo,
+      addGroupName: '',
+      addGroupMode: false
+    });
   }
 
-  submitValue(e) {
-    this.defaultDataUpdate(true);
-    this.changeLoading(true);
-    axios.put(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
-      password: this.state.password,
-      textArr: this.state.textArr,
-      options: this.state.options
-      }).then((res) => {
-        this.changeLoading(false);
-      }).catch((err) => {
-        console.log('api error : ' + err);
-      });
-    e.preventDefault();
+  insertNewMemo(idx) {
+    let baseTextMemo = this.state.textDataMemo;
+    baseTextMemo[idx] = baseTextMemo[idx].concat(['']);
+    this.setState({
+      textDataMemo: baseTextMemo,
+      addMemoName: '',
+      textarea: '',
+      nowIndex: [idx, baseTextMemo[idx].length - 1]
+    });
+    document.getElementById('textarea').focus();
   }
 
   render() {
     return (
       <div>
+        <Header />
         <div className="container">
+          <div className={cx('text-list')}>
+            {this.state.textDataGroup.map((groupName, idx1) => {
+              return (
+                <div className={cx('text-group')} key={groupName+idx1}>
+                  <h4>{groupName}</h4>
+                  <ul>
+                    {this.state.textDataMemo[idx1].map((memoText, idx2) => {
+                      return (
+                        <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
+                          className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
+                            ? cx('active') : ''}>
+                          <p>{memoText.substring(0, 99)}</p>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                  <div className={cx('add-text-btn')} onClick={this.insertNewMemo.bind(this, idx1)}>
+                    <p>+ add memo</p>
+                  </div>
+                </div>
+              )
+            })}
+            {!this.state.addGroupMode ? 
+            <div className={cx('add-text-btn')} onClick={this.addGroupValue}>
+              <p>+ add group</p>
+            </div>
+            :
+            <div>
+              <input type="text" name="addGroupName" onChange={this.changeValue} />
+              <button onClick={this.insertNewGroup}>저장</button>
+            </div>
+            }
+          </div>
           <div className={cx('textarea-position')}>
             <div>
               <form>
                 <textarea id="textarea" autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
               </form>
-              <div className={cx('text-list')}>
-                {this.state.textArr.length ? this.state.textArr.map((text, index) => {
-                  return (
-                    <div key={index} onClick={this.choiceText.bind(this, index)} className={this.state.nowIndex === index ? cx('active') : ''}>
-                      <p>{text.substring(0, 99)}</p>
-                    </div>
-                  )
-                }) : ''}
-                {this.state.textArr.length < 5 ?
-                <div className={cx('add-text-list')} onClick={this.addNewTextList}>
-                  <span>+</span>
-                </div>
-                : '' }
-              </div>
             </div>
           </div>
           <div className={cx('navigation')}>
             <div className={'clearfix'}>
               <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
-              <ul className={'clearfix'}>
-                <li><button onClick={this.submitValue}>save</button></li>
-                <li><button onClick={this.deleteNote}>delete</button></li>
-                <li><NavLink to="/"><button>back</button></NavLink></li>
-              </ul>
             </div>
           </div>
         </div>
@@ -184,11 +193,10 @@ class Note extends Component {
   }
 }
 
-
 const mstp = (state) => {
   return {
     secret : state.secret
   };
-}
+};
 
 export default connect(mstp)(Note);
