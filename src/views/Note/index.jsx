@@ -25,19 +25,54 @@ class Note extends Component {
       options: {},
       addGroupMode: false,
       addGroupName: '',
-      loading: null
+      loading: null,
+      checkDataChange: {
+        groups: '',
+        memos: ''
+      }
     };
     if(this.props.secret.password === '') {
       return this.props.history.push('/');
     }
     this.addGroupValue = this.addGroupValue.bind(this);
     this.insertNewGroup = this.insertNewGroup.bind(this);
+    this.cancelInsertGroup = this.cancelInsertGroup.bind(this);
     this.insertNewMemo = this.insertNewMemo.bind(this);
     this.changeValue = this.changeValue.bind(this);
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.initValue = this.initValue.bind(this);
+    this.autoSaveFnc = null;
     this.initValue();
+  }
+
+
+  autoSave() {
+    const stateGroup = JSON.stringify(this.state.textDataGroup);
+    const stateMemo = JSON.stringify(this.state.textDataMemo);
+    if(this.state.checkDataChange.group === stateGroup && this.state.checkDataChange.memp === stateMemo) return;
+    this.updateData();
+    this.setState({
+      checkDataChange: {
+        groups: stateGroup,
+        memos: stateMemo
+      }
+    });
+  }
+
+  updateData() {
+    this.changeLoading(true);
+    axios.post(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
+      password: this.state.password,
+      dataGroups: this.state.textDataGroup,
+      dataMemos: this.state.textDataMemo,
+      options: this.state.options
+      }).then((res) => {
+        this.changeLoading(false);
+        console.log('save ok');
+      }).catch((err) => {
+        console.log('api error : ' + err);
+      });
   }
 
   initValue() {
@@ -48,11 +83,26 @@ class Note extends Component {
         if(res.data.options === null) {
           this.changeLoading(false);
         } else {
-          this.initDataValue(res.data.textObj);
+          this.initDataValue(res.data);
         }
       }).catch((err) => {
         console.log('api error : ' + err);
       });
+  }
+
+  initDataValue(val) {
+    let initValue = {
+      textDataGroup: val.textDataGroup,
+      textDataMemo: val.textDataMemo,
+      options: val.options,
+      textarea: val.textDataMemo[0][0],
+      checkDataChange: {
+        groups: JSON.stringify(val.textDataGroup),
+        memos: JSON.stringify(val.textDataMemo)
+      }
+    };
+    this.setState(initValue);
+    this.changeLoading(false);
   }
 
   changeValue(e) {
@@ -66,32 +116,16 @@ class Note extends Component {
       changeState.textDataMemo = baseTextMemo;
     }
     this.setState(changeState);
+    if(this.autoSaveFnc !== null) clearTimeout(this.autoSaveFnc);
+    this.autoSaveFnc = setTimeout(() => {
+      this.autoSave();
+    }, 3000);
   }
 
   changeLoading(status) {
     let changeLoading = {};
     changeLoading.loading = status;
     this.setState(changeLoading);
-  }
-
-  initDataValue(val) {
-    let initValue = {
-      textDataGroup: [],
-      textDataMemo: [],
-      textarea: '',
-    };
-    let idx = 0;
-    for(let group in val) {
-      initValue.textDataGroup.push(group);
-      initValue.textDataMemo.push([]);
-      for(let i=0; i<val[group].length; i++) {
-        initValue.textDataMemo[idx].push(val[group][i]);
-      }
-      idx++;
-    }
-    initValue.textarea = initValue.textDataMemo[0][0];
-    this.setState(initValue);
-    this.changeLoading(false);
   }
 
   choiceText(groupIdx, memoIdx) {
@@ -109,6 +143,11 @@ class Note extends Component {
   addGroupValue() {
     if(this.state.addGroupMode) return;
     this.setState({addGroupMode: true});
+    document.getElementById('add-group-box').focus();
+  }
+
+  cancelInsertGroup() {
+    this.setState({addGroupMode: false});
   }
 
   insertNewGroup() {
@@ -165,12 +204,12 @@ class Note extends Component {
             <div className={cx('add-text-btn')} onClick={this.addGroupValue}>
               <p>+ add group</p>
             </div>
-            :
-            <div>
-              <input type="text" name="addGroupName" onChange={this.changeValue} />
-              <button onClick={this.insertNewGroup}>저장</button>
+            : ''}
+            <div className={cx('insert-group-box', this.state.addGroupMode ? 'show': '')}>
+              <input id="add-group-box" type="text" name="addGroupName" onChange={this.changeValue} />
+              <button onClick={this.insertNewGroup}>save</button>
+              <button onClick={this.cancelInsertGroup}>cancel</button>
             </div>
-            }
           </div>
           <div className={cx('textarea-position')}>
             <div>
