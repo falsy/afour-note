@@ -7,6 +7,7 @@ header {
   line-height: 50px;
   background: #fff;
   h1 {
+    display: inline-block;
     font-size: 14px;
     letter-spacing: 3px;
     span {
@@ -17,6 +18,34 @@ header {
       margin-left: -4px;
       display: inline-block;
       letter-spacing: 0;
+    }
+  }
+  .navigation-menu {
+    position: absolute;
+    right: 40px;
+    top: 0;
+    & > span {
+      display: inline-block;
+      margin: 0 10px 0 10px;
+      font-size: 13px;
+      cursor: pointer;
+      &:hover {
+        i > svg {
+          fill: $point;
+        }
+      }
+      i {
+        vertical-align: top;
+        margin: 13px 4px 0 0;
+        display: inline-block;
+        line-height: 10px;
+        & > svg {
+          transition: all 0.3s;
+          width: 24px;
+          height: 24px;
+          fill: #eee;
+        }
+      }
     }
   }
 }
@@ -37,6 +66,18 @@ header {
       color: #444;
       margin-bottom: 5px;
       margin-top: 10px;
+      & > span {
+        opacity: 0;
+        display: inline-block;
+        color: #33c1ab;
+        margin-left: 5px;
+        font-size: 12px;
+        transition: opacity 0.3s;
+        cursor: pointer;
+      }
+      &:hover > span {
+        opacity: 1;
+      }
     }
     ul {
       font-size: 12px;
@@ -62,6 +103,7 @@ header {
       opacity: 0;
       margin-top: 0;
       padding-left: 20px;
+      transition: opacity 0.3s;
     }
   }
 }
@@ -74,7 +116,6 @@ header {
   cursor: pointer;
   line-height: 22px;
   & > p {
-    padding: 0 8px;
     display: inline-block;
   }
 }
@@ -95,6 +136,22 @@ header {
       position: relative;
       width: 100%;
       height: 100%;
+      .option-area {
+        position: absolute;
+        z-index: 20;
+        width: 100%;
+        height: 40px;
+        background: #fff;
+        .delete-memo-btn {
+          position: absolute;
+          right: 15px;
+          font-size: 13px;
+          line-height: 40px;
+          color: $point;
+          cursor: pointer;
+          transition: color 0.3s;
+        }
+      }
     }
   }
 }
@@ -106,10 +163,11 @@ header {
   width: 100%;
   height: 100%;
   overflow: auto;
-  padding: 40px 20px;
+  padding: 40px 40px;
   font-size: 14px;
   line-height: 26px;
   resize: none;
+  box-shadow: 0 1px 1px rgba(20, 20, 20, 0.1);
 }
 
 .navigation {

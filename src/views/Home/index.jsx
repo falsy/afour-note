@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { secret, resetSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
-import Header from '../Header';
 import Styles from '../../scss/views/home';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
@@ -53,7 +52,6 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <Header />
         <div className="container">
           <div className={cx('intro')}>
             <div>
