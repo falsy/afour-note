@@ -23,7 +23,7 @@ header {
   .navigation-menu {
     position: absolute;
     right: 40px;
-    top: 0;
+    top: -2px;
     & > span {
       display: inline-block;
       margin: 0 10px 0 10px;
@@ -145,7 +145,7 @@ header {
         background: #fff;
         .delete-memo-btn {
           position: absolute;
-          right: 15px;
+          right: 30px;
           font-size: 13px;
           line-height: 40px;
           color: $point;
