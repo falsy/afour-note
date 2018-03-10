@@ -4,18 +4,18 @@
 header {
   position: relative;
   z-index: 20;
-  line-height: 50px;
+  line-height: 60px;
   background: #fff;
   h1 {
     display: inline-block;
-    font-size: 14px;
-    letter-spacing: 3px;
+    font-size: 18px;
+    letter-spacing: 0px;
     span {
       font-size: 10px;
       color: $point;
       vertical-align: top;
       margin-top: -3px;
-      margin-left: -4px;
+      margin-left: 0;
       display: inline-block;
       letter-spacing: 0;
     }
@@ -28,6 +28,7 @@ header {
       display: inline-block;
       margin: 0 10px 0 10px;
       font-size: 13px;
+      color: #666;
       cursor: pointer;
       &:hover {
         i > svg {
@@ -36,7 +37,7 @@ header {
       }
       i {
         vertical-align: top;
-        margin: 13px 4px 0 0;
+        margin: 18px 4px 0 0;
         display: inline-block;
         line-height: 10px;
         & > svg {
@@ -53,7 +54,7 @@ header {
 .text-list {
   position: absolute;
   width: 300px;
-  margin-top: 15px;
+  margin-top: 16px;
   z-index: 10;
   .text-group {
     &:hover {
@@ -64,7 +65,7 @@ header {
     h4 {
       font-size: 16px;
       color: #444;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       margin-top: 10px;
       & > span {
         opacity: 0;
@@ -80,12 +81,12 @@ header {
       }
     }
     ul {
-      font-size: 12px;
+      font-size: 13px;
       color: #888;
       li {
         padding: 0 40px 0 20px;
-        height: 28px;
-        line-height: 28px;
+        height: 32px;
+        line-height: 32px;
         &.active {
           background: #f0f0f0;
         }
@@ -131,7 +132,7 @@ header {
     position: relative;
     width: 100%;
     height: 100%;
-    padding: 70px 40px 40px 340px;
+    padding: 80px 40px 40px 340px;
     & > form {
       position: relative;
       width: 100%;

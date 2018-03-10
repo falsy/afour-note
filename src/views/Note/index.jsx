@@ -107,6 +107,7 @@ class Note extends Component {
       textDataMemo: val.textDataMemo,
       options: val.options,
       textarea: val.textDataMemo[0][0],
+      nowIndex: [0, 0],
       checkDataChange: {
         groups: JSON.stringify(val.textDataGroup),
         memos: JSON.stringify(val.textDataMemo)
@@ -228,7 +229,7 @@ class Note extends Component {
       <div>
         <header>
           <div className="container">
-            <NavLink to={'/'}><h1>AFOUR <span>alpha</span></h1></NavLink>
+            <NavLink to={'/'}><h1>afour <span>alpha</span></h1></NavLink>
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
