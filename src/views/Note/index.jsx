@@ -10,6 +10,7 @@ const cx = classNames.bind(Styles);
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
 import UndoIcon from 'mdi-react/UndoIcon';
+import Iframe from '../Iframe';
 
 class Note extends Component {
 
@@ -21,7 +22,6 @@ class Note extends Component {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
       nowIndex: [0, 0],
-      textarea: '',
       textDataGroup: ['default'],
       textDataMemo: [['']],
       options: {},
@@ -36,6 +36,7 @@ class Note extends Component {
     if(this.props.secret.password === '') {
       return this.props.history.push('/');
     }
+    this.fontSizeData = 3;
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -47,8 +48,20 @@ class Note extends Component {
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
+    this.iframeLoaded = this.iframeLoaded.bind(this);
     this.autoSaveFnc = null;
     this.getMemoData();
+    this.textIFrame = '';
+  }
+
+  editCommand(command, value=false) {
+    if(value === 'up' || value === 'down') {
+      if(value === 'up' && this.fontSizeData < 7) this.fontSizeData = this.fontSizeData + 1;
+      else if(value === 'down' && this.fontSizeData > 1) this.fontSizeData = this.fontSizeData - 1;
+      this.textIFrame.execCommand(command, false, this.fontSizeData);
+    } else {
+      this.textIFrame.execCommand(command, false);
+    }
   }
 
   saveMemoData() {
@@ -68,7 +81,7 @@ class Note extends Component {
     if(this.autoSaveFnc !== null) clearTimeout(this.autoSaveFnc);
     this.autoSaveFnc = setTimeout(() => {
       this.saveMemoData();
-    }, 30000);
+    }, 5000);
   }
 
   updateData() {
@@ -106,7 +119,6 @@ class Note extends Component {
       textDataGroup: val.textDataGroup,
       textDataMemo: val.textDataMemo,
       options: val.options,
-      textarea: val.textDataMemo[0][0],
       nowIndex: [0, 0],
       checkDataChange: {
         groups: JSON.stringify(val.textDataGroup),
@@ -114,21 +126,24 @@ class Note extends Component {
       }
     };
     this.setState(initValue);
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = val.textDataMemo[0][0];
     this.changeLoading(false);
   }
 
   changeValue(e) {
     let changeState = {};
     changeState[e.target.name] = e.target.value;
-    if(e.target.name === 'textarea') {
-      const nowGroup = this.state.nowIndex[0];
-      const nowMemo = this.state.nowIndex[1];
-      let baseTextMemo = this.state.textDataMemo;
-      baseTextMemo[nowGroup][nowMemo] = e.target.value;
-      changeState.textDataMemo = baseTextMemo;
-    }
     this.setState(changeState);
-    this.autoSaveTimeout();
+  }
+
+  insertThisTextData() {
+    const gIdx = this.state.nowIndex[0];
+    const mIdx = this.state.nowIndex[1];
+    const baseTextMemo = this.state.textDataMemo.concat();
+    baseTextMemo[gIdx][mIdx] = this.textIFrame.getElementsByTagName('body')[0].innerHTML;
+    this.setState({
+      textDataMemo: baseTextMemo
+    });
   }
 
   changeLoading(status) {
@@ -139,28 +154,32 @@ class Note extends Component {
 
   choiceText(groupIdx, memoIdx) {
     if(this.state.nowIndex[0] === groupIdx && this.state.nowIndex[1] === memoIdx) {
-      return document.getElementById('textarea').focus();
+      return this.textIFrame.getElementsByTagName('body')[0].focus();
     }
-
+    this.insertThisTextData();
     let updateValue = {};
     updateValue.nowIndex = [groupIdx, memoIdx];
-    updateValue.textarea = this.state.textDataMemo[groupIdx][memoIdx];
+    this.textIFrame.getElementsByTagName('body')[0].focus();
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = this.state.textDataMemo[groupIdx][memoIdx];
     this.setState(updateValue);
-    document.getElementById('textarea').focus();
+    this.autoSaveTimeout();
   }
 
   addGroupValue() {
     if(this.state.addGroupMode) return;
     this.setState({addGroupMode: true});
     document.getElementById('add-group-box').focus();
+    this.autoSaveTimeout();
   }
 
   cancelInsertGroup() {
     this.setState({addGroupMode: false});
+    this.autoSaveTimeout();
   }
 
   insertNewGroup() {
     if(this.state.addGroupName === '') return;
+    this.insertThisTextData();
     const baseTextGroup = this.state.textDataGroup.concat(this.state.addGroupName);
     const baseTextMemo = this.state.textDataMemo.concat([['']]);
     const gIdx = baseTextGroup.length - 1;
@@ -170,24 +189,24 @@ class Note extends Component {
       textDataMemo: baseTextMemo,
       addGroupName: '',
       addGroupMode: false,
-      nowIndex: [gIdx, mIdx],
-      textarea: ''
+      nowIndex: [gIdx, mIdx]
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
     document.getElementById('add-group-box').value = '';
-    document.getElementById('textarea').focus();
     this.autoSaveTimeout();
   }
 
   insertNewMemo(idx) {
+    this.insertThisTextData();
     let baseTextMemo = this.state.textDataMemo;
     baseTextMemo[idx] = baseTextMemo[idx].concat(['']);
     this.setState({
       textDataMemo: baseTextMemo,
       addMemoName: '',
-      textarea: '',
       nowIndex: [idx, baseTextMemo[idx].length - 1]
     });
-    document.getElementById('textarea').focus();
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
+    this.textIFrame.getElementsByTagName('body')[0].focus();
     this.autoSaveTimeout();
   }
 
@@ -199,13 +218,13 @@ class Note extends Component {
     if(copyTextMemo[gIdx].length === 0) {
       copyTextMemo[gIdx].push('');
     }
-    const textarea = copyTextMemo[gIdx][0];
     const nowIndex = [gIdx, 0];
     this.setState({
       textDataMemo: copyTextMemo,
-      textarea,
       nowIndex
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = copyTextMemo[gIdx][0];
+    this.autoSaveTimeout();
   }
 
   deleteGroupData(idx) {
@@ -219,9 +238,30 @@ class Note extends Component {
     this.setState({
       textDataGroup: copyDataGroup,
       textDataMemo: copyTextMemo,
-      textarea,
       nowIndex
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = copyTextMemo[0][0];
+    this.autoSaveTimeout();
+  }
+
+  iframeLoaded() {
+    this.textIFrame = document.getElementById('edit-area').contentWindow.document;
+    this.textIFrame.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
+              font-size: 14px;
+              line-height: 26px;
+            }
+          </style>
+        </head>
+        <body>Loading...</body>
+      </html>
+      `);
+    this.textIFrame.designMode = 'on';
   }
 
   render() {
@@ -273,12 +313,17 @@ class Note extends Component {
           </div>
           <div className={cx('textarea-position')}>
             <div>
-              <form>
+              <article>
                 <div className={cx('option-area')}>
-                  <p className={cx('delete-memo-btn')} onClick={this.deleteMemoData}>- delete</p>
+                  <span onClick={this.editCommand.bind(this, 'bold')}>bold</span>
+                  <span onClick={this.editCommand.bind(this, 'strikeThrough')}>strike-through</span>
+                  <span onClick={this.editCommand.bind(this, 'underline')}>underline</span>
+                  <span onClick={this.editCommand.bind(this, 'justifyCenter')}>justify-center</span>
+                  <span onClick={this.editCommand.bind(this, 'justifyLeft')}>justify-left</span>
+                  <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}>- delete</span>
                 </div>
-                <textarea id="textarea" autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
-              </form>
+                <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
+              </article>
             </div>
           </div>
           <div className={cx('navigation')}>
