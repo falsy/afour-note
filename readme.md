@@ -7,7 +7,7 @@ https://afour.net
 
 ## changelog
 
-#### v0.5.4 (180315)
+#### v0.5.5 (180315)
 * WYSIWYG 에디터 개발 및 적용 (prototype)
 
 #### v0.5.3 (180310)

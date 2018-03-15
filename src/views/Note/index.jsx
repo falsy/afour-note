@@ -255,6 +255,7 @@ class Note extends Component {
               font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
               font-size: 14px;
               line-height: 26px;
+              margin: 0;
             }
           </style>
         </head>
