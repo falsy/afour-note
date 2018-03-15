@@ -65,6 +65,7 @@ class Note extends Component {
   }
 
   saveMemoData() {
+    this.insertThisTextData();
     const stateGroup = JSON.stringify(this.state.textDataGroup);
     const stateMemo = JSON.stringify(this.state.textDataMemo);
     if(this.state.checkDataChange.group === stateGroup && this.state.checkDataChange.memp === stateMemo) return;
