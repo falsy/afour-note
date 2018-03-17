@@ -9,7 +9,7 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
-import UndoIcon from 'mdi-react/UndoIcon';
+import ExitToAppIcon from 'mdi-react/ExitToAppIcon';
 import Iframe from '../Iframe';
 
 class Note extends Component {
@@ -106,6 +106,8 @@ class Note extends Component {
       password: this.state.password
       }).then((res) => {
         if(res.data.options === null) {
+          this.textIFrame.getElementsByTagName('body')[0].focus();
+          this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
           this.changeLoading(false);
         } else {
           this.initDataValue(res.data);
@@ -127,6 +129,7 @@ class Note extends Component {
       }
     };
     this.setState(initValue);
+    this.textIFrame.getElementsByTagName('body')[0].focus();
     this.textIFrame.getElementsByTagName('body')[0].innerHTML = val.textDataMemo[0][0];
     this.changeLoading(false);
   }
@@ -275,7 +278,7 @@ class Note extends Component {
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
-              <span><NavLink to={`/`}><i><UndoIcon /></i>esc</NavLink></span>
+              <span><NavLink to={`/`}><i><ExitToAppIcon /></i>exit</NavLink></span>
             </div>
           </div>
         </header>
@@ -291,7 +294,7 @@ class Note extends Component {
                         <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
                           className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
                             ? cx('active') : ''}>
-                          <p>{memoText.substring(0, 99)}</p>
+                          <p>{memoText.substring(0, 99) ? memoText.substring(0, 99) : 'new memo'}</p>
                         </li>
                       )
                     })}
