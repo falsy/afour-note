@@ -7,9 +7,22 @@ import axios from 'axios';
 import Styles from '../../scss/views/note';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
+
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
-import UndoIcon from 'mdi-react/UndoIcon';
+import ExitToAppIcon from 'mdi-react/ExitToAppIcon';
+
+import Bold from 'mdi-react/FormatBoldIcon';
+import Title from 'mdi-react/FormatTitleIcon';
+import Strike from 'mdi-react/FormatStrikethroughIcon';
+import Underline from 'mdi-react/FormatUnderlineIcon';
+import Left from 'mdi-react/FormatAlignLeftIcon';
+import Right from 'mdi-react/FormatAlignRightIcon';
+import Center from 'mdi-react/FormatAlignCenterIcon';
+import Delete from 'mdi-react/DeleteIcon';
+import Clear from 'mdi-react/FormatClearIcon';
+
+import Iframe from '../Iframe';
 
 class Note extends Component {
 
@@ -21,7 +34,6 @@ class Note extends Component {
       noteName: this.props.match.params.noteName,
       password: this.props.secret.password,
       nowIndex: [0, 0],
-      textarea: '',
       textDataGroup: ['default'],
       textDataMemo: [['']],
       options: {},
@@ -47,11 +59,22 @@ class Note extends Component {
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
+    this.iframeLoaded = this.iframeLoaded.bind(this);
     this.autoSaveFnc = null;
     this.getMemoData();
+    this.textIFrame = '';
+  }
+
+  editCommand(command, value=false) {
+    if(value) {
+      this.textIFrame.execCommand(command, false, value);
+    } else {
+      this.textIFrame.execCommand(command, false);
+    }
   }
 
   saveMemoData() {
+    this.insertThisTextData();
     const stateGroup = JSON.stringify(this.state.textDataGroup);
     const stateMemo = JSON.stringify(this.state.textDataMemo);
     if(this.state.checkDataChange.group === stateGroup && this.state.checkDataChange.memp === stateMemo) return;
@@ -68,7 +91,7 @@ class Note extends Component {
     if(this.autoSaveFnc !== null) clearTimeout(this.autoSaveFnc);
     this.autoSaveFnc = setTimeout(() => {
       this.saveMemoData();
-    }, 30000);
+    }, 5000);
   }
 
   updateData() {
@@ -92,6 +115,8 @@ class Note extends Component {
       password: this.state.password
       }).then((res) => {
         if(res.data.options === null) {
+          this.textIFrame.getElementsByTagName('body')[0].focus();
+          this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
           this.changeLoading(false);
         } else {
           this.initDataValue(res.data);
@@ -106,7 +131,6 @@ class Note extends Component {
       textDataGroup: val.textDataGroup,
       textDataMemo: val.textDataMemo,
       options: val.options,
-      textarea: val.textDataMemo[0][0],
       nowIndex: [0, 0],
       checkDataChange: {
         groups: JSON.stringify(val.textDataGroup),
@@ -114,21 +138,25 @@ class Note extends Component {
       }
     };
     this.setState(initValue);
+    this.textIFrame.getElementsByTagName('body')[0].focus();
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = val.textDataMemo[0][0];
     this.changeLoading(false);
   }
 
   changeValue(e) {
     let changeState = {};
     changeState[e.target.name] = e.target.value;
-    if(e.target.name === 'textarea') {
-      const nowGroup = this.state.nowIndex[0];
-      const nowMemo = this.state.nowIndex[1];
-      let baseTextMemo = this.state.textDataMemo;
-      baseTextMemo[nowGroup][nowMemo] = e.target.value;
-      changeState.textDataMemo = baseTextMemo;
-    }
     this.setState(changeState);
-    this.autoSaveTimeout();
+  }
+
+  insertThisTextData() {
+    const gIdx = this.state.nowIndex[0];
+    const mIdx = this.state.nowIndex[1];
+    const baseTextMemo = this.state.textDataMemo.concat();
+    baseTextMemo[gIdx][mIdx] = this.textIFrame.getElementsByTagName('body')[0].innerHTML;
+    this.setState({
+      textDataMemo: baseTextMemo
+    });
   }
 
   changeLoading(status) {
@@ -139,28 +167,32 @@ class Note extends Component {
 
   choiceText(groupIdx, memoIdx) {
     if(this.state.nowIndex[0] === groupIdx && this.state.nowIndex[1] === memoIdx) {
-      return document.getElementById('textarea').focus();
+      return this.textIFrame.getElementsByTagName('body')[0].focus();
     }
-
+    this.insertThisTextData();
     let updateValue = {};
     updateValue.nowIndex = [groupIdx, memoIdx];
-    updateValue.textarea = this.state.textDataMemo[groupIdx][memoIdx];
+    this.textIFrame.getElementsByTagName('body')[0].focus();
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = this.state.textDataMemo[groupIdx][memoIdx];
     this.setState(updateValue);
-    document.getElementById('textarea').focus();
+    this.autoSaveTimeout();
   }
 
   addGroupValue() {
     if(this.state.addGroupMode) return;
     this.setState({addGroupMode: true});
     document.getElementById('add-group-box').focus();
+    this.autoSaveTimeout();
   }
 
   cancelInsertGroup() {
     this.setState({addGroupMode: false});
+    this.autoSaveTimeout();
   }
 
   insertNewGroup() {
     if(this.state.addGroupName === '') return;
+    this.insertThisTextData();
     const baseTextGroup = this.state.textDataGroup.concat(this.state.addGroupName);
     const baseTextMemo = this.state.textDataMemo.concat([['']]);
     const gIdx = baseTextGroup.length - 1;
@@ -170,24 +202,24 @@ class Note extends Component {
       textDataMemo: baseTextMemo,
       addGroupName: '',
       addGroupMode: false,
-      nowIndex: [gIdx, mIdx],
-      textarea: ''
+      nowIndex: [gIdx, mIdx]
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
     document.getElementById('add-group-box').value = '';
-    document.getElementById('textarea').focus();
     this.autoSaveTimeout();
   }
 
   insertNewMemo(idx) {
+    this.insertThisTextData();
     let baseTextMemo = this.state.textDataMemo;
     baseTextMemo[idx] = baseTextMemo[idx].concat(['']);
     this.setState({
       textDataMemo: baseTextMemo,
       addMemoName: '',
-      textarea: '',
       nowIndex: [idx, baseTextMemo[idx].length - 1]
     });
-    document.getElementById('textarea').focus();
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
+    this.textIFrame.getElementsByTagName('body')[0].focus();
     this.autoSaveTimeout();
   }
 
@@ -199,13 +231,13 @@ class Note extends Component {
     if(copyTextMemo[gIdx].length === 0) {
       copyTextMemo[gIdx].push('');
     }
-    const textarea = copyTextMemo[gIdx][0];
     const nowIndex = [gIdx, 0];
     this.setState({
       textDataMemo: copyTextMemo,
-      textarea,
       nowIndex
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = copyTextMemo[gIdx][0];
+    this.autoSaveTimeout();
   }
 
   deleteGroupData(idx) {
@@ -219,9 +251,31 @@ class Note extends Component {
     this.setState({
       textDataGroup: copyDataGroup,
       textDataMemo: copyTextMemo,
-      textarea,
       nowIndex
     });
+    this.textIFrame.getElementsByTagName('body')[0].innerHTML = copyTextMemo[0][0];
+    this.autoSaveTimeout();
+  }
+
+  iframeLoaded() {
+    this.textIFrame = document.getElementById('edit-area').contentWindow.document;
+    this.textIFrame.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
+              font-size: 16px;
+              line-height: 26px;
+              margin: 0;
+            }
+          </style>
+        </head>
+        <body>Loading...</body>
+      </html>
+      `);
+    this.textIFrame.designMode = 'on';
   }
 
   render() {
@@ -233,7 +287,7 @@ class Note extends Component {
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
-              <span><NavLink to={`/`}><i><UndoIcon /></i>esc</NavLink></span>
+              <span><NavLink to={`/`}><i><ExitToAppIcon /></i>exit</NavLink></span>
             </div>
           </div>
         </header>
@@ -249,7 +303,7 @@ class Note extends Component {
                         <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
                           className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
                             ? cx('active') : ''}>
-                          <p>{memoText.substring(0, 99)}</p>
+                          <p>{memoText.substring(0, 99) ? memoText.substring(0, 99) : 'new memo'}</p>
                         </li>
                       )
                     })}
@@ -273,12 +327,20 @@ class Note extends Component {
           </div>
           <div className={cx('textarea-position')}>
             <div>
-              <form>
+              <article>
                 <div className={cx('option-area')}>
-                  <p className={cx('delete-memo-btn')} onClick={this.deleteMemoData}>- delete</p>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'fontSize', '5')}><i><Title /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'bold')}><i><Bold /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'strikeThrough')}><i><Strike /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'underline')}><i><Underline /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'justifyLeft')}><i><Left /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'justifyCenter')}><i><Center /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
+                  <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
-                <textarea id="textarea" autoFocus name="textarea" className={cx('textarea')} onChange={this.changeValue} value={this.state.textarea}/>
-              </form>
+                <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
+              </article>
             </div>
           </div>
           <div className={cx('navigation')}>
