@@ -7,9 +7,21 @@ import axios from 'axios';
 import Styles from '../../scss/views/note';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
+
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
 import ExitToAppIcon from 'mdi-react/ExitToAppIcon';
+
+import Bold from 'mdi-react/FormatBoldIcon';
+import Title from 'mdi-react/FormatTitleIcon';
+import Strike from 'mdi-react/FormatStrikethroughIcon';
+import Underline from 'mdi-react/FormatUnderlineIcon';
+import Left from 'mdi-react/FormatAlignLeftIcon';
+import Right from 'mdi-react/FormatAlignRightIcon';
+import Center from 'mdi-react/FormatAlignCenterIcon';
+import Delete from 'mdi-react/DeleteIcon';
+import Clear from 'mdi-react/FormatClearIcon';
+
 import Iframe from '../Iframe';
 
 class Note extends Component {
@@ -36,7 +48,6 @@ class Note extends Component {
     if(this.props.secret.password === '') {
       return this.props.history.push('/');
     }
-    this.fontSizeData = 3;
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -55,10 +66,8 @@ class Note extends Component {
   }
 
   editCommand(command, value=false) {
-    if(value === 'up' || value === 'down') {
-      if(value === 'up' && this.fontSizeData < 7) this.fontSizeData = this.fontSizeData + 1;
-      else if(value === 'down' && this.fontSizeData > 1) this.fontSizeData = this.fontSizeData - 1;
-      this.textIFrame.execCommand(command, false, this.fontSizeData);
+    if(value) {
+      this.textIFrame.execCommand(command, false, value);
     } else {
       this.textIFrame.execCommand(command, false);
     }
@@ -257,7 +266,7 @@ class Note extends Component {
           <style>
             body {
               font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
-              font-size: 14px;
+              font-size: 16px;
               line-height: 26px;
               margin: 0;
             }
@@ -320,12 +329,15 @@ class Note extends Component {
             <div>
               <article>
                 <div className={cx('option-area')}>
-                  <span onClick={this.editCommand.bind(this, 'bold')}>bold</span>
-                  <span onClick={this.editCommand.bind(this, 'strikeThrough')}>strike-through</span>
-                  <span onClick={this.editCommand.bind(this, 'underline')}>underline</span>
-                  <span onClick={this.editCommand.bind(this, 'justifyCenter')}>justify-center</span>
-                  <span onClick={this.editCommand.bind(this, 'justifyLeft')}>justify-left</span>
-                  <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}>- delete</span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'fontSize', '5')}><i><Title /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'bold')}><i><Bold /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'strikeThrough')}><i><Strike /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'underline')}><i><Underline /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'justifyLeft')}><i><Left /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'justifyCenter')}><i><Center /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
+                  <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
                 <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
               </article>

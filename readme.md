@@ -7,6 +7,9 @@ https://afour.net
 
 ## changelog
 
+#### v0.5.8 (180318)
+* WYSIWYG 에디터 개발 및 적용
+
 #### v0.5.7 (180317)
 * 내용이 임력되지 않은 메모 요약글 'new memeo'로 수정
 * 최초 진입시 'loading' 텍스트가 사라지지 않은 오류 수정
