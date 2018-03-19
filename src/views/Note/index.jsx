@@ -77,7 +77,7 @@ class Note extends Component {
     this.insertThisTextData();
     const stateGroup = JSON.stringify(this.state.textDataGroup);
     const stateMemo = JSON.stringify(this.state.textDataMemo);
-    if(this.state.checkDataChange.group === stateGroup && this.state.checkDataChange.memp === stateMemo) return;
+    if(this.state.checkDataChange.groups === stateGroup && this.state.checkDataChange.memos === stateMemo) return;
     this.updateData();
     this.setState({
       checkDataChange: {
@@ -103,7 +103,6 @@ class Note extends Component {
       options: this.state.options
       }).then((res) => {
         this.changeLoading(false);
-        console.log('save ok');
       }).catch((err) => {
         console.log('api error : ' + err);
       });
@@ -258,6 +257,7 @@ class Note extends Component {
   }
 
   iframeLoaded() {
+    if(typeof this.textIFrame === 'undefined') return;
     this.textIFrame = document.getElementById('edit-area').contentWindow.document;
     this.textIFrame.write(`
       <!DOCTYPE html>
@@ -285,7 +285,7 @@ class Note extends Component {
       <div>
         <header>
           <div className="container">
-            <NavLink to={'/'}><h1>afour <span>alpha</span></h1></NavLink>
+            <NavLink to={'/'}><h1>afour <span>beta</span></h1></NavLink>
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
