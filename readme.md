@@ -7,6 +7,9 @@ https://afour.net
 
 ## changelog
 
+#### v0.5.10 (180319)
+* WYSIWYG 스타일 수정 및 폰트 적용
+
 #### v0.5.9 (180318)
 * WYSIWYG 에디터 개발 및 적용
 * 스타일 수정

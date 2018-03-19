@@ -263,11 +263,13 @@ class Note extends Component {
       <!DOCTYPE html>
       <html>
         <head>
+          <link href="https://afour.net/afour-proxima-nova.css" rel="stylesheet">
           <style>
+            @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
             body {
               font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
-              font-size: 16px;
-              line-height: 26px;
+              font-size: 14px;
+              line-height: 24px;
               margin: 0;
             }
           </style>
