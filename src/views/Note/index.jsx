@@ -12,8 +12,9 @@ import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
 import ExitToAppIcon from 'mdi-react/ExitToAppIcon';
 
-import Bold from 'mdi-react/FormatBoldIcon';
 import Title from 'mdi-react/FormatTitleIcon';
+import Bold from 'mdi-react/FormatBoldIcon';
+import Italic from 'mdi-react/FormatItalicIcon';
 import Strike from 'mdi-react/FormatStrikethroughIcon';
 import Underline from 'mdi-react/FormatUnderlineIcon';
 import Left from 'mdi-react/FormatAlignLeftIcon';
@@ -331,14 +332,15 @@ class Note extends Component {
             <div>
               <article>
                 <div className={cx('option-area')}>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'fontSize', '5')}><i><Title /></i></span>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'bold')}><i><Bold /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'fontSize', '4')}><i><Title /></i></span>
+                  <span onClick={this.editCommand.bind(this, 'bold')}><i><Bold /></i></span>
+                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'italic')}><i><Italic /></i></span>
                   <span onClick={this.editCommand.bind(this, 'strikeThrough')}><i><Strike /></i></span>
                   <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'underline')}><i><Underline /></i></span>
                   <span onClick={this.editCommand.bind(this, 'justifyLeft')}><i><Left /></i></span>
                   <span onClick={this.editCommand.bind(this, 'justifyCenter')}><i><Center /></i></span>
                   <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
                   <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
                 <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
