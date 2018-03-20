@@ -343,14 +343,13 @@ class Note extends Component {
                   <ul>
                     {this.state.textDataMemo[idx1].map((memoText, idx2) => {
                       let el = document.createElement('div');
-                      memoText = memoText.replace('<div>', '<br><div>');
-                      el.innerHTML = memoText.replace('<br>', ' ');
+                      el.innerHTML = memoText.replace(/</gi, ' <');
                       memoText = el.textContent || el.innerText || '';
                       return (
                         <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
                           className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
                             ? cx('active') : ''}>
-                          <p>{memoText.substring(0, 30) ? memoText.substring(0, 30) : 'new memo'}</p>
+                          <p>{memoText.substring(0, 60) ? memoText.substring(0, 60) : 'new memo'}</p>
                         </li>
                       )
                     })}
