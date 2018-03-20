@@ -37,8 +37,10 @@ class Note extends Component {
       nowIndex: [0, 0],
       textDataGroup: ['default'],
       textDataMemo: [['']],
+      editGroupName: '',
       options: {},
       addGroupMode: false,
+      editGroupMode: false,
       addGroupName: '',
       loading: null,
       checkDataChange: {
@@ -52,6 +54,9 @@ class Note extends Component {
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
+    this.editGroupData = this.editGroupData.bind(this);
+    this.saveEditGroup = this.saveEditGroup.bind(this);
+    this.cancelEditGroup = this.cancelEditGroup.bind(this);
     this.addGroupValue = this.addGroupValue.bind(this);
     this.insertNewGroup = this.insertNewGroup.bind(this);
     this.cancelInsertGroup = this.cancelInsertGroup.bind(this);
@@ -92,7 +97,7 @@ class Note extends Component {
     if(this.autoSaveFnc !== null) clearTimeout(this.autoSaveFnc);
     this.autoSaveFnc = setTimeout(() => {
       this.saveMemoData();
-    }, 5000);
+    }, 3000);
   }
 
   updateData() {
@@ -257,6 +262,33 @@ class Note extends Component {
     this.autoSaveTimeout();
   }
 
+  editGroupData(idx) {
+    this.setState({
+      editGroupMode: idx,
+      editGroupName: ''
+    });
+  }
+
+  saveEditGroup() {
+    const idx = this.state.editGroupMode;
+    const name = this.state.editGroupName;
+    const groups = this.state.textDataGroup.concat();
+    groups.splice(idx, 1, name);
+    this.setState({
+      editGroupMode: false,
+      editGroupName: '',
+      textDataGroup: groups
+    });
+    this.autoSaveTimeout();
+  }
+
+  cancelEditGroup() {
+    this.setState({
+      editGroupMode: false,
+      editGroupName: ''
+    });
+  }
+
   iframeLoaded() {
     if(typeof this.textIFrame === 'undefined') return;
     this.textIFrame = document.getElementById('edit-area').contentWindow.document;
@@ -299,14 +331,26 @@ class Note extends Component {
             {this.state.textDataGroup.map((groupName, idx1) => {
               return (
                 <div className={cx('text-group')} key={groupName+idx1}>
-                  <h4>{groupName} {idx1 > 0 ? <span onClick={this.deleteGroupData.bind(this, idx1)}>- delete</span> : '' }</h4>
+                  <h4 className={cx(this.state.editGroupMode === idx1 ? 'display-none' : '')}>{groupName}
+                  {idx1 > 0 ? 
+                    <div><span onClick={this.deleteGroupData.bind(this, idx1)}>delete</span><span onClick={this.editGroupData.bind(this, idx1)}>edit</span></div> : '' }
+                  </h4>
+                  <div className={cx('insert-eidt-group-box', this.state.editGroupMode === idx1 ? 'show': '')}>
+                    <input className={cx('edit-group-'+idx1)} type="text" name="editGroupName" onChange={this.changeValue} />
+                    <button onClick={this.saveEditGroup}>save</button>
+                    <button onClick={this.cancelEditGroup}>cancel</button>
+                  </div>
                   <ul>
                     {this.state.textDataMemo[idx1].map((memoText, idx2) => {
+                      let el = document.createElement('div');
+                      memoText = memoText.replace('<div>', '<br><div>');
+                      el.innerHTML = memoText.replace('<br>', ' ');
+                      memoText = el.textContent || el.innerText || '';
                       return (
                         <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
                           className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
                             ? cx('active') : ''}>
-                          <p>{memoText.substring(0, 99) ? memoText.substring(0, 99) : 'new memo'}</p>
+                          <p>{memoText.substring(0, 30) ? memoText.substring(0, 30) : 'new memo'}</p>
                         </li>
                       )
                     })}
@@ -322,7 +366,7 @@ class Note extends Component {
               <p>+ add group</p>
             </div>
             : ''}
-            <div className={cx('insert-group-box', this.state.addGroupMode ? 'show': '')}>
+            <div className={cx('insert-eidt-group-box', this.state.addGroupMode ? 'show': '')}>
               <input id="add-group-box" type="text" name="addGroupName" onChange={this.changeValue} />
               <button onClick={this.insertNewGroup}>save</button>
               <button onClick={this.cancelInsertGroup}>cancel</button>

@@ -71,16 +71,19 @@ header {
       color: #444;
       margin-bottom: 9px;
       margin-top: 10px;
-      & > span {
-        opacity: 0;
+      div {
         display: inline-block;
-        color: #33c1ab;
-        margin-left: 5px;
-        font-size: 12px;
-        transition: opacity 0.3s;
-        cursor: pointer;
+        & > span {
+          opacity: 0;
+          display: inline-block;
+          color: #33c1ab;
+          margin-left: 10px;
+          font-size: 12px;
+          transition: opacity 0.3s;
+          cursor: pointer;
+        }
       }
-      &:hover > span {
+      &:hover div > span {
         opacity: 1;
       }
     }
@@ -228,10 +231,13 @@ header {
   }
 }
 
-.insert-group-box {
+.insert-eidt-group-box {
   opacity: 0;
+  height: 0;
+  overflow: hidden;
   &.show {
     opacity: 1;
+    height: auto;
   }
   input {
     border: 0;
@@ -287,4 +293,8 @@ header {
   0% {width: 96%;}
   20% {width: 100%;}
   100% {opacity: 0; width: 100%;}
+}
+
+.display-none {
+  display: none;
 }
