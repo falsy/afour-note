@@ -10,6 +10,10 @@ class Home extends Component {
 
   constructor(props) {
     super(props);
+    const { dispatch } = this.props;
+    dispatch(resetSecret());
+    window.localStorage.clear();
+    
     this.state = {
       noteName: '',
       password: ''
@@ -17,11 +21,6 @@ class Home extends Component {
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.valueCheck = this.valueCheck.bind(this);
-
-    if(this.props.secret.password) {
-      const { dispatch } = this.props;
-      dispatch(resetSecret());
-    }
   }
 
   changeValue(e) {

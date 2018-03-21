@@ -17,7 +17,7 @@ export default class App extends Component {
             <div className="content">
               <Switch>
                 <Route exact path="/" component={Home} />
-                <Route exact path="/:noteName" component={Note} />
+                <Route path="/:noteName" component={Note} />
               </Switch>
             </div>
           </div>

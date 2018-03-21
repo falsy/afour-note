@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import {APIURL} from '../../constants/config.constant';
 import axios from 'axios';
@@ -29,11 +28,11 @@ class Note extends Component {
 
   constructor(props) {
     super(props);
-    const { dispatch } = this.props;
-    dispatch(getSecret());
+    const userData = this.userData();
+
     this.state = {
-      noteName: this.props.match.params.noteName,
-      password: this.props.secret.password,
+      noteName: userData.noteName,
+      password: userData.password,
       nowIndex: [0, 0],
       textDataGroup: ['default'],
       textDataMemo: [['']],
@@ -48,9 +47,9 @@ class Note extends Component {
         memos: ''
       }
     };
-    if(this.props.secret.password === '') {
-      return this.props.history.push('/');
-    }
+
+    if(!userData) return this.props.history.push('/');
+
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -65,10 +64,46 @@ class Note extends Component {
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
-    this.iframeLoaded = this.iframeLoaded.bind(this);
+    this.handleLoad = this.handleLoad.bind(this);
+    this.sessionData = userData;
     this.autoSaveFnc = null;
-    this.getMemoData();
     this.textIFrame = '';
+  }
+
+  componentDidMount() {
+    window.addEventListener('load', this.handleLoad);
+    if(this.sessionData && !this.sessionData.session) {
+      this.iframeLoaded();
+      this.getMemoData();
+    }
+  }
+
+  handleLoad() {
+    if(this.sessionData) {
+      this.iframeLoaded();
+      this.getMemoData();
+    }
+  }
+
+  userData() {
+    const nowDate = new Date();
+    const longTime = nowDate.getTime();
+    if(!this.props.secret.password && window.localStorage.getItem("user_session")) {
+      const sessionData = atob(window.localStorage.getItem("user_session"));
+      const userData = sessionData.split('/pw/');
+      const noteName = userData[0];
+      const password = userData[1].split('/time/')[0];
+      const timeStamp = userData[1].split('/time/')[1];
+      if(noteName === this.props.match.params.noteName && longTime + 1296000000 > Number(timeStamp)) {
+        return {noteName, password, session: true};
+      }
+    }
+    if(this.props.secret.password) {
+      const userData = this.props.match.params.noteName + '/pw/' + this.props.secret.password + '/time/' + longTime;
+      window.localStorage.setItem('user_session', btoa(userData));
+      return {noteName: this.props.match.params.noteName, password: this.props.secret.password, session: false};
+    }
+    return false;
   }
 
   editCommand(command, value=false) {
@@ -115,7 +150,7 @@ class Note extends Component {
   }
 
   getMemoData() {
-    setTimeout(() => this.changeLoading(true));
+    this.changeLoading(true);
     axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
       password: this.state.password
       }).then((res) => {
@@ -386,7 +421,7 @@ class Note extends Component {
                   <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
                   <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
-                <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
+                <Iframe id="edit-area" className={cx('text-editor-area')} />
               </article>
             </div>
           </div>
