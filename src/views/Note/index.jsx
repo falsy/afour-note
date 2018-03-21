@@ -65,22 +65,24 @@ class Note extends Component {
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
-    this.sessionCheck = userData.session;
+    this.sessionData = userData;
     this.autoSaveFnc = null;
     this.textIFrame = '';
   }
 
   componentDidMount() {
     window.addEventListener('load', this.handleLoad);
-    if(!this.sessionCheck) {
+    if(this.sessionData && !this.sessionData.session) {
       this.iframeLoaded();
       this.getMemoData();
     }
   }
 
   handleLoad() {
-    this.iframeLoaded();
-    this.getMemoData();
+    if(this.sessionData) {
+      this.iframeLoaded();
+      this.getMemoData();
+    }
   }
 
   userData() {
@@ -92,7 +94,7 @@ class Note extends Component {
       const noteName = userData[0];
       const password = userData[1].split('/time/')[0];
       const timeStamp = userData[1].split('/time/')[1];
-      if(noteName === this.props.match.params.noteName || longTime + 1296000000 > Number(timeStamp)) {
+      if(noteName === this.props.match.params.noteName && longTime + 1296000000 > Number(timeStamp)) {
         return {noteName, password, session: true};
       }
     }
