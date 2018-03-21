@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getSecret } from '../../actions/secret';
 import { NavLink } from 'react-router-dom';
 import {APIURL} from '../../constants/config.constant';
 import axios from 'axios';
@@ -65,10 +64,18 @@ class Note extends Component {
     this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
-    this.iframeLoaded = this.iframeLoaded.bind(this);
+    this.handleLoad = this.handleLoad.bind(this);
     this.autoSaveFnc = null;
-    this.getMemoData();
     this.textIFrame = '';
+  }
+
+  componentDidMount() {
+    window.addEventListener('load', this.handleLoad);
+  }
+
+  handleLoad() {
+    this.iframeLoaded();
+    this.getMemoData();
   }
 
   userData() {
@@ -136,7 +143,7 @@ class Note extends Component {
   }
 
   getMemoData() {
-    setTimeout(() => this.changeLoading(true));
+    this.changeLoading(true);
     axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
       password: this.state.password
       }).then((res) => {
@@ -407,7 +414,7 @@ class Note extends Component {
                   <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
                   <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
-                <Iframe onLoad={this.iframeLoaded} id="edit-area" className={cx('text-editor-area')} src="about:blank" />
+                <Iframe id="edit-area" className={cx('text-editor-area')} />
               </article>
             </div>
           </div>
