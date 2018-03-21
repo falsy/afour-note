@@ -29,11 +29,11 @@ class Note extends Component {
 
   constructor(props) {
     super(props);
-    const { dispatch } = this.props;
-    dispatch(getSecret());
+    const userData = this.userData();
+
     this.state = {
-      noteName: this.props.match.params.noteName,
-      password: this.props.secret.password,
+      noteName: userData.noteName,
+      password: userData.password,
       nowIndex: [0, 0],
       textDataGroup: ['default'],
       textDataMemo: [['']],
@@ -48,9 +48,9 @@ class Note extends Component {
         memos: ''
       }
     };
-    if(this.props.secret.password === '') {
-      return this.props.history.push('/');
-    }
+
+    if(!userData) return this.props.history.push('/');
+
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -69,6 +69,27 @@ class Note extends Component {
     this.autoSaveFnc = null;
     this.getMemoData();
     this.textIFrame = '';
+  }
+
+  userData() {
+    const nowDate = new Date();
+    const longTime = nowDate.getTime();
+    if(!this.props.secret.password && window.localStorage.getItem("user_session")) {
+      const sessionData = atob(window.localStorage.getItem("user_session"));
+      const userData = sessionData.split('/pw/');
+      const noteName = userData[0];
+      const password = userData[1].split('/time/')[0];
+      const timeStamp = userData[1].split('/time/')[1];
+      if(noteName === this.props.match.params.noteName || longTime + 1296000000 > Number(timeStamp)) {
+        return {noteName, password};
+      }
+    }
+    if(this.props.secret.password) {
+      const userData = this.props.match.params.noteName + '/pw/' + this.props.secret.password + '/time/' + longTime;
+      window.localStorage.setItem('user_session', btoa(userData));
+      return {noteName: this.props.match.params.noteName, password: this.props.secret.password};
+    }
+    return false;
   }
 
   editCommand(command, value=false) {
