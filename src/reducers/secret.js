@@ -1,17 +1,15 @@
-import { SECRET, GET_SECRET, RESET_SECRET } from '../constants/secret';
+import { SET_TOKEN, DELETE_TOKEN } from '../constants/secret';
 
 const initialState = {
-  password: ''
+  login: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case SECRET:
-      return { ...state, password: action.password };
-    case GET_SECRET:
-      return { ...state, password: state.password };
-    case RESET_SECRET:
-      return { ...state, password: '' };
+    case SET_TOKEN:
+      return { ...state, login: true };
+    case DELETE_TOKEN:
+      return { ...state, login: false };
     default:
       return state;
   }
