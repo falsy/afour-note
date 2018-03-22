@@ -1,20 +1,18 @@
-import { SECRET, GET_SECRET, RESET_SECRET} from '../constants/secret';
+import { SET_TOKEN, DELETE_TOKEN } from '../constants/secret';
+import axios from 'axios';
 
-export function secret(password) {
+export function setToken(token) {
+  window.localStorage.setItem("token", token);
+  axios.defaults.headers.common['token'] = token;
   return {
-    type: SECRET,
-    password: password
-  };
-}
-
-export function getSecret() {
-  return {
-    type: GET_SECRET
+    type: SET_TOKEN
   }
 }
 
-export function resetSecret() {
+export function deleteToken() {
+  window.localStorage.clear();
+  delete axios.defaults.headers.common['token'];
   return {
-    type: RESET_SECRET
+    type: DELETE_TOKEN
   }
 }

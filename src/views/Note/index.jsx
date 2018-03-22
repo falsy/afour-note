@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import {APIURL} from '../../constants/config.constant';
+import { APIURL } from '../../constants/config.constant';
+import { setToken, deleteToken } from '../../actions/secret';
 import axios from 'axios';
+
 import Styles from '../../scss/views/note';
 import classNames from 'classnames/bind';
 const cx = classNames.bind(Styles);
@@ -28,11 +30,9 @@ class Note extends Component {
 
   constructor(props) {
     super(props);
-    const userData = this.userData();
+    const userTokenCheck = this.userTokenCheck();
 
     this.state = {
-      noteName: userData.noteName,
-      password: userData.password,
       nowIndex: [0, 0],
       textDataGroup: ['default'],
       textDataMemo: [['']],
@@ -47,8 +47,6 @@ class Note extends Component {
         memos: ''
       }
     };
-
-    if(!userData) return this.props.history.push('/');
 
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
@@ -65,45 +63,45 @@ class Note extends Component {
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
-    this.sessionData = userData;
+    this.logout = this.logout.bind(this);
+    this.sessionData = userTokenCheck;
     this.autoSaveFnc = null;
     this.textIFrame = '';
   }
 
   componentDidMount() {
     window.addEventListener('load', this.handleLoad);
-    if(this.sessionData && !this.sessionData.session) {
+    if(this.sessionData === true) {
       this.iframeLoaded();
       this.getMemoData();
     }
   }
 
   handleLoad() {
-    if(this.sessionData) {
+    if(this.sessionData === false) {
       this.iframeLoaded();
       this.getMemoData();
     }
   }
 
-  userData() {
-    const nowDate = new Date();
-    const longTime = nowDate.getTime();
-    if(!this.props.secret.password && window.localStorage.getItem("user_session")) {
-      const sessionData = atob(window.localStorage.getItem("user_session"));
-      const userData = sessionData.split('/pw/');
-      const noteName = userData[0];
-      const password = userData[1].split('/time/')[0];
-      const timeStamp = userData[1].split('/time/')[1];
-      if(noteName === this.props.match.params.noteName && longTime + 1296000000 > Number(timeStamp)) {
-        return {noteName, password, session: true};
+  userTokenCheck() {
+    const { dispatch } = this.props;
+    if(window.localStorage.getItem("token")) {
+      const id = window.localStorage.getItem("token").split('.')[0];
+      if(this.props.match.params.id !== id) {
+        dispatch(deleteToken());
+        return this.props.history.push('/');
       }
+      if(this.props.secret.login) {
+        return true;
+      } else {
+        dispatch(setToken(window.localStorage.getItem("token")));
+        return false;
+      }
+    } else {
+      dispatch(deleteToken());
+      return this.props.history.push('/');
     }
-    if(this.props.secret.password) {
-      const userData = this.props.match.params.noteName + '/pw/' + this.props.secret.password + '/time/' + longTime;
-      window.localStorage.setItem('user_session', btoa(userData));
-      return {noteName: this.props.match.params.noteName, password: this.props.secret.password, session: false};
-    }
-    return false;
   }
 
   editCommand(command, value=false) {
@@ -137,8 +135,7 @@ class Note extends Component {
 
   updateData() {
     this.changeLoading(true);
-    axios.post(APIURL+'/updateSecretNote?noteName='+this.state.noteName, {
-      password: this.state.password,
+    axios.post(APIURL+'/updateSecretNote', {
       dataGroups: this.state.textDataGroup,
       dataMemos: this.state.textDataMemo,
       options: this.state.options
@@ -151,19 +148,17 @@ class Note extends Component {
 
   getMemoData() {
     this.changeLoading(true);
-    axios.post(APIURL+'/getSecretNote?noteName='+this.state.noteName, {
-      password: this.state.password
-      }).then((res) => {
-        if(res.data.options === null) {
-          this.textIFrame.getElementsByTagName('body')[0].focus();
-          this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
-          this.changeLoading(false);
-        } else {
-          this.initDataValue(res.data);
-        }
-      }).catch((err) => {
-        console.log('api error : ' + err);
-      });
+    axios.post(APIURL+'/getSecretNote').then((res) => {
+      if(res.data.options === null) {
+        this.textIFrame.getElementsByTagName('body')[0].focus();
+        this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
+        this.changeLoading(false);
+      } else {
+        this.initDataValue(res.data);
+      }
+    }).catch((err) => {
+      console.log('api error : ' + err);
+    });
   }
 
   initDataValue(val) {
@@ -348,6 +343,12 @@ class Note extends Component {
     this.textIFrame.designMode = 'on';
   }
 
+  logout() {
+    const { dispatch } = this.props;
+    dispatch(deleteToken());
+    return this.props.history.push('/');
+  }
+
   render() {
     return (
       <div>
@@ -357,7 +358,7 @@ class Note extends Component {
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
-              <span><NavLink to={`/`}><i><ExitToAppIcon /></i>exit</NavLink></span>
+              <span onClick={this.logout}><i><ExitToAppIcon /></i>exit</span>
             </div>
           </div>
         </header>
