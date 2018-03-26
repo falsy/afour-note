@@ -25,6 +25,7 @@ import Delete from 'mdi-react/DeleteIcon';
 import Clear from 'mdi-react/FormatClearIcon';
 
 import Iframe from '../Iframe';
+import Logo from '../../img/afour-logo.png';
 
 class Note extends Component {
 
@@ -354,7 +355,7 @@ class Note extends Component {
       <div>
         <header>
           <div className="container">
-            <NavLink to={'/'}><h1>afour <span>beta</span></h1></NavLink>
+            <NavLink to={'/'}><h1><img src={Logo} width="107" alt="logo" /></h1></NavLink>
             <div className={cx('navigation-menu')}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
