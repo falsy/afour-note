@@ -107,7 +107,7 @@ class Home extends Component {
             <div className={cx('intro')}>
               <div>
                 <label>
-                  <span>ID</span>
+                  <span>Name</span>
                   <input autoFocus id="id" type="text" name="id" onChange={this.changeValue} />
                 </label>
                 <label>
