@@ -81,7 +81,7 @@ class Home extends Component {
 
   render() {
     return (
-      <div>
+      <div className={cx('intro-wrap')}>
         <div className={cx('logo')}>
           <img src={Logo} width="214" alt="logo" />
           <h1>Safe and easy Web Notes</h1>
