@@ -49,6 +49,7 @@ class Note extends Component {
       }
     };
 
+    this.sessionTokenError = this.sessionTokenError.bind(this);
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -68,6 +69,7 @@ class Note extends Component {
     this.sessionData = userTokenCheck;
     this.autoSaveFnc = null;
     this.textIFrame = '';
+    this.errorCount = 0;
   }
 
   componentDidMount() {
@@ -133,32 +135,57 @@ class Note extends Component {
       this.saveMemoData();
     }, 3000);
   }
+  
+  sessionTokenError() {
+    const { dispatch } = this.props;
+    dispatch(deleteToken());
+    return this.props.history.push('/');
+  }
 
   updateData() {
     this.changeLoading(true);
+    this.errorCount += 1;
     axios.post(APIURL+'/updateSecretNote', {
       dataGroups: this.state.textDataGroup,
       dataMemos: this.state.textDataMemo,
       options: this.state.options
       }).then((res) => {
+        if(res.data.error) return this.sessionTokenError();
+        this.errorCount = 0;
         this.changeLoading(false);
       }).catch((err) => {
-        console.log('api error : ' + err);
+        if(this.errorCount < 3) {
+          setTimeout(() => {
+            this.updateData();
+          }, 1000);
+        } else {
+          this.sessionTokenError();
+        }
       });
   }
 
   getMemoData() {
     this.changeLoading(true);
+    this.errorCount += 1;
     axios.post(APIURL+'/getSecretNote').then((res) => {
+      if(res.data.error) return this.sessionTokenError();
       if(res.data.options === null) {
         this.textIFrame.getElementsByTagName('body')[0].focus();
         this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
+        this.errorCount = 0;
         this.changeLoading(false);
       } else {
+        this.errorCount = 0;
         this.initDataValue(res.data);
       }
     }).catch((err) => {
-      console.log('api error : ' + err);
+      if(this.errorCount < 3) {
+        setTimeout(() => {
+          this.getMemoData();
+        }, 1000);
+      } else {
+        this.sessionTokenError();
+      }
     });
   }
 
