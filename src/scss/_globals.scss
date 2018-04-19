@@ -10,3 +10,29 @@
   padding: 0 40px;
   min-width: 900px;
 }
+
+// Mini Alert
+:global(#alert-container) {
+  position: fixed;
+  z-index: 10000;
+  left: 20px;
+  bottom: 40px;
+  min-width: 340px;
+  height: auto;
+  & > div {
+    background: #33c1ab;
+    position: relative;
+    color: #fff;
+    line-height: 16px;
+    padding: 9px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.4);
+    cursor: pointer;
+    border-radius: 2px;
+    & > span {
+      display: inline-block;
+    }
+  }
+}

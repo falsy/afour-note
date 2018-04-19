@@ -61,8 +61,14 @@ class Home extends Component {
 
   loginReq() {
     const { dispatch } = this.props;
-    if(!this.state.id) document.getElementById('id').focus();
-    if(!this.state.password) document.getElementById('password').focus();
+    if(!this.state.id) {
+      document.getElementById('id').focus();
+      return $.mAlert('메모의 이름을 입력해주세요.');
+    }
+    if(!this.state.password) {
+      document.getElementById('password').focus();
+      return $.mAlert('비밀번호를 입력해주세요.');
+    }
     this.changeLoading(true);
     axios.post(APIURL+'/login', {
       id: this.state.id, 
@@ -74,7 +80,7 @@ class Home extends Component {
       }
       this.changeLoading(false);
     }).catch((err) => {
-      console.log('login api error : ' + err);
+      $.mAlert('서버와의 통신이 원활하지 않습니다.');
       this.changeLoading(false);
     });
   }

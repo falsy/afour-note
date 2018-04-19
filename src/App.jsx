@@ -4,11 +4,13 @@ import {Provider} from 'react-redux';
 import store from './store';
 import './scss/app';
 
+import miniAlert from './lib/mini-alert/mini-alert';
+miniAlert();
+
 import Home from './views/Home';
 import Note from './views/Note';
 
 export default class App extends Component {
-
   render() {
     return (
       <Provider store={store}>

@@ -150,7 +150,10 @@ class Note extends Component {
       dataMemos: this.state.textDataMemo,
       options: this.state.options
       }).then((res) => {
-        if(res.data.error) return this.sessionTokenError();
+        if(res.data.error) {
+          $.mAlert('로그인 세션이 만료되었습니다.');
+          return this.sessionTokenError();
+        }
         this.errorCount = 0;
         this.changeLoading(false);
       }).catch((err) => {
@@ -159,6 +162,7 @@ class Note extends Component {
             this.updateData();
           }, 1000);
         } else {
+          $.mAlert('서버와의 통신이 원활하지 않습니다.');
           this.sessionTokenError();
         }
       });
@@ -168,7 +172,10 @@ class Note extends Component {
     this.changeLoading(true);
     this.errorCount += 1;
     axios.post(APIURL+'/getSecretNote').then((res) => {
-      if(res.data.error) return this.sessionTokenError();
+      if(res.data.error) {
+        $.mAlert('로그인 세션이 만료되었습니다.');
+        return this.sessionTokenError();
+      }
       if(res.data.options === null) {
         this.textIFrame.getElementsByTagName('body')[0].focus();
         this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
@@ -184,6 +191,7 @@ class Note extends Component {
           this.getMemoData();
         }, 1000);
       } else {
+        $.mAlert('서버와의 통신이 원활하지 않습니다.');
         this.sessionTokenError();
       }
     });
