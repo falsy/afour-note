@@ -7,6 +7,9 @@ https://afour.net
 
 ## changelog
 
+#### v0.5.25 (180422)
+* 오류 알림창 import 수정
+
 #### v0.5.24 (180420)
 * 오류 알림창 추가 (jQuery)
 

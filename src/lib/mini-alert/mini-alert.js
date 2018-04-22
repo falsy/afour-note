@@ -1,4 +1,4 @@
-export default function miniAlert() {
+function miniAlert() {
   const $alertContainerId = $('#alert-container');
   const $alertBoxSeletor = $alertContainerId.children('div');
   const showTimer = 5000;
@@ -29,3 +29,5 @@ export default function miniAlert() {
     return alertNo = alertNo + 1;
   };
 }
+
+export default miniAlert()

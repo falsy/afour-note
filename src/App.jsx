@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import store from './store';
-import './scss/app';
 
-import miniAlert from './lib/mini-alert/mini-alert';
-miniAlert();
+import './lib/mini-alert/mini-alert';
+import './scss/app';
 
 import Home from './views/Home';
 import Note from './views/Note';
