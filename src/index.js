@@ -10,10 +10,9 @@ render(
 
 if (module && module.hot) {
   module.hot.accept('./App', () => {
-    const Afour = require('./App').default;
     render(
       <AppContainer>
-        <Afour />
+        <App />
       </AppContainer>,
       document.getElementById('wrap')
     );

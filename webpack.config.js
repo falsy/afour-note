@@ -1,3 +1,5 @@
+// Development Webpack
+
 let { resolve } = require('path');
 let webpack = require('webpack');
 let DashboardPlugin = require('webpack-dashboard/plugin');
@@ -5,13 +7,13 @@ let HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
 
-  devtool: 'cheap-module-eval-source-map',
-
   context: resolve(__dirname, 'src'),
+
+  mode: 'development',
 
   entry: [
     'react-hot-loader/patch',
-    `webpack-dev-server/client?http://localhost:1234`,
+    `webpack-dev-server/client?http://${process.env.NODE_HOST || 'localhost'}:${process.env.NODE_PORT || 8111}`,
     './'
   ],
 
@@ -25,13 +27,16 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        loaders: ['babel-loader'],
-        exclude: /node_modules/
+        loader: 'babel-loader',
+        options: {
+          presets: ['env', 'react', 'stage-0']
+        },
+        exclude: ['/node_modules']
       },
       {
         test: /\.scss$/,
         loaders: ['style-loader', 'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]__[hash:base64:5]', 'postcss-loader', 'sass-loader'],
-        exclude: /node_modules/
+        exclude: ['/node_modules']
       },
       { test: /\.(png|jpg|gif)$/, use: 'url-loader?limit=15000&name=[name]-[hash].[ext]' },
       { test: /\.eot(\?v=\d+.\d+.\d+)?$/, use: 'file-loader' },
@@ -40,7 +45,7 @@ module.exports = {
       { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=image/svg+xml' }
     ]
   },
-
+  
   resolve: {
     extensions: ['.js', '.jsx', '.scss'],
     alias: {
@@ -49,10 +54,10 @@ module.exports = {
       respond: resolve(__dirname, 'src/scss/utils/respond')
     }
   },
-
+  
   devServer: {
-    host: 'localhost',
-    port: 1234,
+    host: process.env.NODE_HOST || 'localhost',
+    port: process.env.NODE_PORT || 8111,
     contentBase: resolve(__dirname, 'build'),
     publicPath: '/',
     historyApiFallback: true,
@@ -71,7 +76,7 @@ module.exports = {
       colors: true
     }
   },
-
+  
   plugins: [
     new webpack.optimize.ModuleConcatenationPlugin(),
     new HtmlWebpackPlugin({
@@ -82,5 +87,5 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new DashboardPlugin()
   ]
-
+  
 }

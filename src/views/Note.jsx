@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import { APIURL } from '../../constants/config.constant';
-import { setToken, deleteToken } from '../../actions/secret';
+import { APIURL } from '../constants';
 import axios from 'axios';
-
-import Styles from '../../scss/views/note';
-import classNames from 'classnames/bind';
-const cx = classNames.bind(Styles);
 
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
@@ -24,8 +17,8 @@ import Center from 'mdi-react/FormatAlignCenterIcon';
 import Delete from 'mdi-react/DeleteIcon';
 import Clear from 'mdi-react/FormatClearIcon';
 
-import Iframe from '../Iframe';
-import Logo from '../../img/afour-logo.png';
+import Iframe from './Iframe';
+import Logo from '../img/afour-logo.png';
 
 class Note extends Component {
 
@@ -74,37 +67,39 @@ class Note extends Component {
 
   componentDidMount() {
     window.addEventListener('load', this.handleLoad);
-    if(this.sessionData === true) {
-      this.iframeLoaded();
-      this.getMemoData();
-    }
-  }
-
-  handleLoad() {
     if(this.sessionData === false) {
       this.iframeLoaded();
       this.getMemoData();
     }
   }
 
-  userTokenCheck() {
-    const { dispatch } = this.props;
-    if(window.localStorage.getItem("token")) {
-      const id = window.localStorage.getItem("token").split('.')[0];
-      if(this.props.match.params.id !== id) {
-        dispatch(deleteToken());
-        return this.props.history.push('/');
-      }
-      if(this.props.secret.login) {
-        return true;
-      } else {
-        dispatch(setToken(window.localStorage.getItem("token")));
-        return false;
-      }
-    } else {
-      dispatch(deleteToken());
-      return this.props.history.push('/');
+  handleLoad() {
+    if(this.sessionData === true) {
+      this.iframeLoaded();
+      this.getMemoData();
     }
+  }
+
+  userTokenCheck() {
+    const token = window.localStorage.getItem('token');
+    const nowCheck = window.localStorage.getItem('nowLoginCheck');
+    
+    if(token) {
+      const id = token.split('.')[0];
+      if(this.props.match.params.id === id) {
+        axios.defaults.headers.common['token'] = token;
+        if(nowCheck) {
+          window.localStorage.removeItem('nowLoginCheck')
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+
+    window.localStorage.clear();
+    delete axios.defaults.headers.common['token'];
+    return this.props.history.push('/');
   }
 
   editCommand(command, value=false) {
@@ -137,8 +132,8 @@ class Note extends Component {
   }
   
   sessionTokenError() {
-    const { dispatch } = this.props;
-    dispatch(deleteToken());
+    window.localStorage.clear();
+    delete axios.defaults.headers.common['token'];
     return this.props.history.push('/');
   }
 
@@ -151,7 +146,7 @@ class Note extends Component {
       options: this.state.options
       }).then((res) => {
         if(res.data.error) {
-          $.mAlert('로그인 세션이 만료되었습니다.');
+          // $.mAlert('로그인 세션이 만료되었습니다.');
           return this.sessionTokenError();
         }
         this.errorCount = 0;
@@ -162,7 +157,7 @@ class Note extends Component {
             this.updateData();
           }, 1000);
         } else {
-          $.mAlert('서버와의 통신이 원활하지 않습니다.');
+          // $.mAlert('서버와의 통신이 원활하지 않습니다.');
           this.sessionTokenError();
         }
       });
@@ -173,7 +168,7 @@ class Note extends Component {
     this.errorCount += 1;
     axios.post(APIURL+'/getSecretNote').then((res) => {
       if(res.data.error) {
-        $.mAlert('로그인 세션이 만료되었습니다.');
+        // $.mAlert('로그인 세션이 만료되었습니다.');
         return this.sessionTokenError();
       }
       if(res.data.options === null) {
@@ -191,7 +186,7 @@ class Note extends Component {
           this.getMemoData();
         }, 1000);
       } else {
-        $.mAlert('서버와의 통신이 원활하지 않습니다.');
+        // $.mAlert('서버와의 통신이 원활하지 않습니다.');
         this.sessionTokenError();
       }
     });
@@ -380,8 +375,8 @@ class Note extends Component {
   }
 
   logout() {
-    const { dispatch } = this.props;
-    dispatch(deleteToken());
+    window.localStorage.clear();
+    delete axios.defaults.headers.common['token'];
     return this.props.history.push('/');
   }
 
@@ -390,8 +385,8 @@ class Note extends Component {
       <div>
         <header>
           <div className="container">
-            <NavLink to={'/'}><h1><img src={Logo} width="107" alt="logo" /></h1></NavLink>
-            <div className={cx('navigation-menu')}>
+            <h1><img src={Logo} width="107" alt="logo" /></h1>
+            <div className={'navigation-menu'}>
               <span onClick={this.getMemoData}><i><SyncIcon /></i>sync</span>
               <span onClick={this.saveMemoData}><i><CloudIcon /></i>save</span>
               <span onClick={this.logout}><i><ExitToAppIcon /></i>exit</span>
@@ -399,16 +394,16 @@ class Note extends Component {
           </div>
         </header>
         <div className="container">
-          <div className={cx('text-list')}>
+          <div className={'text-list'}>
             {this.state.textDataGroup.map((groupName, idx1) => {
               return (
-                <div className={cx('text-group')} key={groupName+idx1}>
-                  <h4 className={cx(this.state.editGroupMode === idx1 ? 'display-none' : '')}>{groupName}
+                <div className={'text-group'} key={groupName+idx1}>
+                  <h4 className={this.state.editGroupMode === idx1 ? 'display-none' : ''}>{groupName}
                   {idx1 > 0 ? 
                     <div><span onClick={this.deleteGroupData.bind(this, idx1)}>delete</span><span onClick={this.editGroupData.bind(this, idx1)}>edit</span></div> : '' }
                   </h4>
-                  <div className={cx('insert-eidt-group-box', this.state.editGroupMode === idx1 ? 'show': '')}>
-                    <input className={cx('edit-group-'+idx1)} type="text" name="editGroupName" onChange={this.changeValue} />
+                  <div className={this.state.editGroupMode === idx1 ? 'insert-eidt-group-box show': 'insert-eidt-group-box'}>
+                    <input className={'edit-group-'+idx1} type="text" name="editGroupName" onChange={this.changeValue} />
                     <button onClick={this.saveEditGroup}>save</button>
                     <button onClick={this.cancelEditGroup}>cancel</button>
                   </div>
@@ -420,66 +415,60 @@ class Note extends Component {
                       return (
                         <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
                           className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
-                            ? cx('active') : ''}>
+                            ? 'active' : ''}>
                           <p>{memoText.substring(0, 60) ? memoText.substring(0, 60) : 'new memo'}</p>
                         </li>
                       )
                     })}
                   </ul>
-                  <div className={cx('add-text-btn')} onClick={this.insertNewMemo.bind(this, idx1)}>
+                  <div className={'add-text-btn'} onClick={this.insertNewMemo.bind(this, idx1)}>
                     <p>+ add memo</p>
                   </div>
                 </div>
               )
             })}
             {!this.state.addGroupMode ? 
-            <div className={cx('add-text-btn')} onClick={this.addGroupValue}>
+            <div className={'add-text-btn'} onClick={this.addGroupValue}>
               <p>+ add group</p>
             </div>
             : ''}
-            <div className={cx('insert-eidt-group-box', this.state.addGroupMode ? 'show': '')}>
+            <div className={this.state.addGroupMode ? 'insert-eidt-group-box show' : 'insert-eidt-group-box'}>
               <input id="add-group-box" type="text" name="addGroupName" onChange={this.changeValue} />
               <button onClick={this.insertNewGroup}>save</button>
               <button onClick={this.cancelInsertGroup}>cancel</button>
             </div>
           </div>
-          <div className={cx('textarea-position')}>
+          <div className={'textarea-position'}>
             <div>
               <article>
-                <div className={cx('option-area')}>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
+                <div className={'option-area'}>
+                  <span className={'right-line'} onClick={this.editCommand.bind(this, 'removeFormat')}><i><Clear /></i></span>
                   <span onClick={this.editCommand.bind(this, 'fontSize', '4')}><i><Title /></i></span>
                   <span onClick={this.editCommand.bind(this, 'bold')}><i><Bold /></i></span>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'italic')}><i><Italic /></i></span>
+                  <span className={'right-line'} onClick={this.editCommand.bind(this, 'italic')}><i><Italic /></i></span>
                   <span onClick={this.editCommand.bind(this, 'strikeThrough')}><i><Strike /></i></span>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'underline')}><i><Underline /></i></span>
+                  <span className={'right-line'} onClick={this.editCommand.bind(this, 'underline')}><i><Underline /></i></span>
                   <span onClick={this.editCommand.bind(this, 'justifyLeft')}><i><Left /></i></span>
                   <span onClick={this.editCommand.bind(this, 'justifyCenter')}><i><Center /></i></span>
-                  <span className={cx('right-line')} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
-                  <span className={cx('delete-memo-btn')} onClick={this.deleteMemoData}><i><Delete /></i></span>
+                  <span className={'right-line'} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
+                  <span className={'delete-memo-btn'} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
-                <Iframe id="edit-area" className={cx('text-editor-area')} />
+                <Iframe id="edit-area" className={'text-editor-area'} />
               </article>
             </div>
           </div>
-          <div className={cx('navigation')}>
+          <div className={'navigation'}>
             <div className={'clearfix'}>
               <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
             </div>
           </div>
         </div>
-        <div className={cx('loading-box')}>
-          <div className={this.state.loading === null ? '' : this.state.loading ? cx('start') : cx('loading', 'end')}></div>
+        <div className={'loading-box'}>
+          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading, end'}></div>
         </div>
       </div>
     )
   }
 }
 
-const mstp = (state) => {
-  return {
-    secret : state.secret
-  };
-};
-
-export default connect(mstp)(Note);
+export default Note;

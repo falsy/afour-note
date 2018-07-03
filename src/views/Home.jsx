@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { setToken } from '../../actions/secret';
-import { APIURL } from '../../constants/config.constant';
 import axios from 'axios';
 
-import Styles from '../../scss/views/home';
-import classNames from 'classnames/bind';
-const cx = classNames.bind(Styles);
-
-import Logo from '../../img/afour-logo-big.png';
+import { APIURL } from '../constants';
+import Logo from '../img/afour-logo-big.png';
 
 import Security from 'mdi-react/SecurityIcon';
 import Account from 'mdi-react/AccountCircleIcon';
@@ -63,54 +57,52 @@ class Home extends Component {
     const { dispatch } = this.props;
     if(!this.state.id) {
       document.getElementById('id').focus();
-      return $.mAlert('메모의 이름을 입력해주세요.');
     }
     if(!this.state.password) {
       document.getElementById('password').focus();
-      return $.mAlert('비밀번호를 입력해주세요.');
     }
     this.changeLoading(true);
+
     axios.post(APIURL+'/login', {
       id: this.state.id, 
       pw: this.state.password
     }).then((res) => {
       if(!res.data.error) {
-        dispatch(setToken(res.data.token));
+        const token = res.data.token;
+        window.localStorage.setItem("token", token);
+        window.localStorage.setItem("nowLoginCheck", 'true');
+        axios.defaults.headers.common['token'] = token;
         this.props.history.push('/'+this.state.id);
       }
       this.changeLoading(false);
     }).catch((err) => {
-      $.mAlert('서버와의 통신이 원활하지 않습니다.');
       this.changeLoading(false);
     });
   }
 
   render() {
     return (
-      <div className={cx('intro-wrap')}>
-        <div className={cx('logo')}>
+      <div className="intro-wrap">
+        <div className="logo">
           <img src={Logo} width="214" alt="logo" />
           <h1>Safe and easy Web Notes</h1>
         </div>
-        <div className={cx('container', 'intro-container')}>
-          <div className={cx('intro-content', 'clearfix')}>
-            <div className={cx('strong-point')}>
+        <div className={'container', 'intro-container'}>
+          <div className={'intro-content', 'clearfix'}>
+            <div className={'strong-point'}>
               <ul>
-                <li className={cx('clearfix')}>
-                  <div><Account /></div>
+                <li className={'clearfix'}>
                   <p>No personal information is asked</p>
                 </li>
-                <li className={cx('clearfix')}>
-                  <div><Security /></div>
+                <li className={'clearfix'}>
                   <p>All content is stored encrypted</p>
                 </li>
-                <li className={cx('clearfix')}>
-                  <div><DeleteSweep /></div>
+                <li className={'clearfix'}>
                   <p>The changed past will not be saved</p>
                 </li>
               </ul>
             </div>
-            <div className={cx('intro')}>
+            <div className={'intro'}>
               <div>
                 <label>
                   <span>Name</span>
@@ -125,23 +117,17 @@ class Home extends Component {
             </div>
           </div>
         </div>
-        <div className={cx('loading-box')}>
-          <div className={this.state.loading === null ? '' : this.state.loading ? cx('start') : cx('loading', 'end')}></div>
+        <div className={'loading-box'}>
+          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading', 'end'}></div>
         </div>
-        <div className={cx('navigation')}>
+        <div className={'navigation'}>
           <div className={'clearfix'}>
             <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-const mstp = (state) => {
-  return {
-    secret : state.secret
-  };
-}
-
-export default connect(mstp)(Home);
+export default Home

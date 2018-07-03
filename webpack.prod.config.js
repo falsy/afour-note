@@ -1,43 +1,45 @@
+// Production Webpack
+
 let { resolve } = require('path');
 let webpack = require('webpack');
 let HtmlWebpackPlugin = require('html-webpack-plugin');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
+let MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-
-  devtool: false,
-
+  
   context: resolve(__dirname, 'src'),
 
+  mode: 'production',
+  
   entry: [
-    './',
-    './scss/app'
+    '/',
   ],
-
+  
   output: {
     filename: 'app-[hash].js',
     path: resolve(__dirname, 'build'),
     publicPath: '/',
   },
-
+  
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        loaders: ['babel-loader'],
-        exclude: /node_modules/
+        loader: 'babel-loader',
+        options: {
+          presets: ['env', 'react', 'stage-0']
+        },
+        exclude: ['/node_modules']
       },
       {
         test: /\.scss$/,
         exclude: /node_modules/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            'css-loader?modules&importLoaders=1&localIdentName=[hash:base64:5]',
-            'postcss-loader',
-            { loader: 'sass-loader', query: { sourceMap: false } }
-          ],
-        }),
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ]
       },
       { test: /\.(png|jpg|gif)$/, use: 'url-loader?limit=15000&name=[hash:base64:5].[ext]' },
       { test: /\.eot(\?v=\d+.\d+.\d+)?$/, use: 'file-loader' },
@@ -46,7 +48,7 @@ module.exports = {
       { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=image/svg+xml' }
     ]
   },
-
+  
   resolve: {
     extensions: ['.js', '.jsx', '.scss'],
     alias: {
@@ -55,7 +57,7 @@ module.exports = {
       respond: resolve(__dirname, 'src/scss/utils/respond')
     }
   },
-
+  
   plugins: [
     new webpack.optimize.ModuleConcatenationPlugin(),
     new HtmlWebpackPlugin({
@@ -63,23 +65,12 @@ module.exports = {
       filename: 'index.html',
       inject: 'body',
     }),
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
-      debug: false,
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      beautify: false,
-      mangle: {
-        screw_ie8: true,
-        keep_fnames: true,
-      },
-      compress: {
-        screw_ie8: true,
-      },
-      comments: false,
-    }),
-    new ExtractTextPlugin({ filename: 'app-[hash].css', disable: false, allChunks: true })
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: "[name].css",
+      chunkFilename: "[id].css"
+    })
   ]
-
+  
 }
