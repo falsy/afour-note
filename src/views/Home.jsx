@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import { APIURL } from '../constants';
-import Logo from '../img/afour-logo-big.png';
+import Logo from '../img/afour-logo-big2.png';
 
 import Security from 'mdi-react/SecurityIcon';
 import Account from 'mdi-react/AccountCircleIcon';
@@ -64,7 +64,7 @@ class Home extends Component {
     this.changeLoading(true);
 
     axios.post(APIURL+'/login', {
-      id: this.state.id, 
+      id: this.state.id,
       pw: this.state.password
     }).then((res) => {
       if(!res.data.error) {
@@ -83,37 +83,25 @@ class Home extends Component {
   render() {
     return (
       <div className="intro-wrap">
-        <div className="logo">
-          <img src={Logo} width="214" alt="logo" />
-          <h1>Safe and easy Web Notes</h1>
-        </div>
-        <div className={'container', 'intro-container'}>
-          <div className={'intro-content', 'clearfix'}>
-            <div className={'strong-point'}>
-              <ul>
-                <li className={'clearfix'}>
-                  <p>No personal information is asked</p>
-                </li>
-                <li className={'clearfix'}>
-                  <p>All content is stored encrypted</p>
-                </li>
-                <li className={'clearfix'}>
-                  <p>The changed past will not be saved</p>
-                </li>
-              </ul>
-            </div>
+        <div className="align-box">
+          <div className="logo">
+            <img src={Logo} width="280" alt="logo" />
+            <p>If you remember only the name and password of the note,<br />
+  you can remember it anywhere on the Internet.</p>
+          </div>
+          <div className={'container', 'intro-container'}>
             <div className={'intro'}>
               <div>
                 <label>
-                  <span>Name</span>
+                  <span>name</span>
                   <input autoFocus id="id" type="text" name="id" onChange={this.changeValue} />
                 </label>
                 <label>
-                  <span>Password</span>
+                  <span>password</span>
                   <input id="password" type="password" name="password" onChange={this.changeValue} onKeyDown={this.keyDown} />
                 </label>
               </div>
-              <button onClick={this.loginReq}>enter</button>
+              <button onClick={this.loginReq}>ENTER</button>
             </div>
           </div>
         </div>

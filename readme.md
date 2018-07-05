@@ -7,6 +7,9 @@ https://afour.net
 
 ## changelog
 
+#### v0.6.2 (180706)
+* 로그인 화면 스타일 수정
+
 #### v0.6.1 (180705)
 * 프론트 수정중..
 * package-lock.json 제거

@@ -63,20 +63,30 @@ a {color: inherit; text-decoration: none;}
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #fff;
+  // background: red;
 }
 
+:global(.align-box) {
+  position: relative;
+  top: 50%;
+  margin-top: -260px;
+}
 :global(.logo) {
   text-align: center;
-  padding: 60px 0;
-  h1 {
+  padding: 0 0 40px;
+  p {
+    margin-top: 26px;
+    color: #525252;
     font-size: 14px;
+    line-height: 24px;
+    font-weight: 300;
+    letter-spacing: 0.3px;
   }
 }
 
 :global(.intro-container) {
-  min-width: 768px;
-  max-width: 768px;
+  min-width: 290px;
+  max-width: 290px;
   margin: 0 auto;
 }
 
@@ -84,36 +94,7 @@ a {color: inherit; text-decoration: none;}
   padding: 90px 0 120px;
 }
 
-:global(.strong-point) {
-  float: left;
-  width: 50%;
-  ul > li {
-    & > div {
-      float: left;
-      display: inline-block;
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
-      background: #f7f7f7;
-      text-align: center;
-      padding-top: 8px;
-      svg {
-        width: 20px;
-        height: 20px;
-      }
-    }
-    p {
-      float: left;
-      line-height: 40px;
-      font-size: 14px;
-      margin: 0 0 10px 10px;
-    }
-  }
-}
-
 :global(.intro) {
-  float: left;
-  width: 50%;
   h1 {
     font-size: 26px;
     margin-bottom: 15px;
@@ -133,10 +114,14 @@ a {color: inherit; text-decoration: none;}
     span {
       position: absolute;
       display: block;
-      font-size: 14px;
-      margin-top: 10px;
-      padding: 0 2px 4px;
-      color: #999;
+      font-size: 12px;
+      padding: 13px 2px 4px 8px;
+      height: 45px;
+      font-weight: 300;
+      color: #444;
+      color: $point;
+      background: #f9f9f9;
+      width: 70px;
     }
   }
 
@@ -144,18 +129,19 @@ a {color: inherit; text-decoration: none;}
     color: #111;
     display: block;
     width: 100%;
-    font-size: 15px;
-    line-height: 40px;
-    height: 41px;
-    padding: 0 10px 0 80px;
+    font-size: 18px;
+    line-height: 44px;
+    height: 45px;
+    padding: 0 10px 0 100px;
     border: 0;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 10px;
+    // border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
     background: inherit;
+    background: #fff;
   }
 
   label + label input {
-    margin-bottom: 15px;
+    margin-bottom: 30px;
   }
 
   a + span {
@@ -168,18 +154,37 @@ a {color: inherit; text-decoration: none;}
   }
 
   button {
+    position: relative;
     display: block;
     border: 0;
     width: 100%;
-    font-size: 15px;
+    font-size: 13px;
     line-height: 40px;
-    color: #fff;
-    background: $point;
+    // color: #fff;
+    // background: $point;
     cursor: pointer;
-    transition: background 0.3s;
-    &:hover {
-      background: $point-dark;
-    }
+    background: transparent;
+    // color: $point;
+    color: #111;
+    // border-bottom: 1px solid $point;
+    // background: #fff;
+    // font-weight: bold;
+    letter-spacing: 0.8px;
+    // border: 1px solid #ddd;
+    // transition: background 0.3s;
+    // letter-spacing: 50px;
+    // font-size: 10px;
+
+    // &:before {
+    //   content: '';
+    //   position: absolute;
+    //   width: 1px;
+    //   height: 25px;
+    //   background: #ddd;
+    //   transform: rotate(40deg);
+    //   left: 8px;
+    //   top: -3px;
+    // }
   }
 }
 
