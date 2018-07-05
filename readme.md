@@ -7,6 +7,11 @@ https://afour.net
 
 ## changelog
 
+#### v0.6.1 (180705)
+* 프론트 수정중..
+* package-lock.json 제거
+* 폰트 수정
+
 #### v0.6.0 (180704)
 * 프론트 수정중..
 

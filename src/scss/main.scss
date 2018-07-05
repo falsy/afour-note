@@ -1,4 +1,5 @@
-$font-family: 'ProximaNova-Regular', 'Noto Sans KR', sans-serif;
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+$font-family: 'proxima-nova', 'Noto Sans KR', sans-serif;
 $point: #33c1ab;
 $point-dark: #23b7a0;
 
@@ -59,6 +60,9 @@ a {color: inherit; text-decoration: none;}
 
 // Home
 :global(.intro-wrap) {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background: #fff;
 }
 
@@ -201,6 +205,7 @@ a {color: inherit; text-decoration: none;}
 
 :global(.loading-box) {
   position: fixed;
+  z-index: 100;
   bottom: 0;
   height: 4px;
   width: 100%;
@@ -331,8 +336,8 @@ header {
         p {
           overflow: hidden;
           word-wrap: break-word;
-          display: -webkit-box; 
-          -webkit-line-clamp: 1; 
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
           -webkit-box-orient: vertical;
         }
       }

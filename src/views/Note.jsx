@@ -83,7 +83,7 @@ class Note extends Component {
   userTokenCheck() {
     const token = window.localStorage.getItem('token');
     const nowCheck = window.localStorage.getItem('nowLoginCheck');
-    
+
     if(token) {
       const id = token.split('.')[0];
       if(this.props.match.params.id === id) {
@@ -130,7 +130,7 @@ class Note extends Component {
       this.saveMemoData();
     }, 3000);
   }
-  
+
   sessionTokenError() {
     window.localStorage.clear();
     delete axios.defaults.headers.common['token'];
@@ -146,7 +146,6 @@ class Note extends Component {
       options: this.state.options
       }).then((res) => {
         if(res.data.error) {
-          // $.mAlert('로그인 세션이 만료되었습니다.');
           return this.sessionTokenError();
         }
         this.errorCount = 0;
@@ -157,7 +156,6 @@ class Note extends Component {
             this.updateData();
           }, 1000);
         } else {
-          // $.mAlert('서버와의 통신이 원활하지 않습니다.');
           this.sessionTokenError();
         }
       });
@@ -168,7 +166,6 @@ class Note extends Component {
     this.errorCount += 1;
     axios.post(APIURL+'/getSecretNote').then((res) => {
       if(res.data.error) {
-        // $.mAlert('로그인 세션이 만료되었습니다.');
         return this.sessionTokenError();
       }
       if(res.data.options === null) {
@@ -186,7 +183,6 @@ class Note extends Component {
           this.getMemoData();
         }, 1000);
       } else {
-        // $.mAlert('서버와의 통신이 원활하지 않습니다.');
         this.sessionTokenError();
       }
     });
@@ -357,11 +353,11 @@ class Note extends Component {
       <!DOCTYPE html>
       <html>
         <head>
-          <link href="https://afour.net/afour-proxima-nova.css" rel="stylesheet">
+          <link rel="stylesheet" href="https://use.typekit.net/orj3zwm.css">
           <style>
             @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
             body {
-              font-family: "ProximaNova-Regular", "Noto Sans KR", sans-serif;
+              font-family: 'proxima-nova', 'Noto Sans KR', sans-serif;
               font-size: 14px;
               line-height: 24px;
               margin: 0;
@@ -399,7 +395,7 @@ class Note extends Component {
               return (
                 <div className={'text-group'} key={groupName+idx1}>
                   <h4 className={this.state.editGroupMode === idx1 ? 'display-none' : ''}>{groupName}
-                  {idx1 > 0 ? 
+                  {idx1 > 0 ?
                     <div><span onClick={this.deleteGroupData.bind(this, idx1)}>delete</span><span onClick={this.editGroupData.bind(this, idx1)}>edit</span></div> : '' }
                   </h4>
                   <div className={this.state.editGroupMode === idx1 ? 'insert-eidt-group-box show': 'insert-eidt-group-box'}>
@@ -413,8 +409,8 @@ class Note extends Component {
                       el.innerHTML = memoText.replace(/</gi, ' <');
                       memoText = el.textContent || el.innerText || '';
                       return (
-                        <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)} 
-                          className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2 
+                        <li key={memoText+idx2} onClick={this.choiceText.bind(this, idx1, idx2)}
+                          className={this.state.nowIndex[0] === idx1 && this.state.nowIndex[1] === idx2
                             ? 'active' : ''}>
                           <p>{memoText.substring(0, 60) ? memoText.substring(0, 60) : 'new memo'}</p>
                         </li>
@@ -427,7 +423,7 @@ class Note extends Component {
                 </div>
               )
             })}
-            {!this.state.addGroupMode ? 
+            {!this.state.addGroupMode ?
             <div className={'add-text-btn'} onClick={this.addGroupValue}>
               <p>+ add group</p>
             </div>
@@ -464,7 +460,7 @@ class Note extends Component {
           </div>
         </div>
         <div className={'loading-box'}>
-          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading, end'}></div>
+          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading end'}></div>
         </div>
       </div>
     )
