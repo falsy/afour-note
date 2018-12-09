@@ -46,32 +46,32 @@ q { quotes: "“" "”" "‘" "’" }
 a {color: inherit; text-decoration: none;}
 
 // Clearfix
-:global(.clearfix:after) {
+.clearfix:after {
   content: "";
   display: table;
   clear: both
 }
 
 // Container
-:global(.container) {
+.container {
   padding: 0 40px;
   min-width: 900px;
 }
 
 // Home
-:global(.intro-wrap) {
+.intro-wrap {
   position: absolute;
   width: 100%;
   height: 100%;
   // background: red;
 }
 
-:global(.align-box) {
+.align-box {
   position: relative;
   top: 50%;
   margin-top: -260px;
 }
-:global(.logo) {
+.logo {
   text-align: center;
   padding: 0 0 40px;
   p {
@@ -84,17 +84,17 @@ a {color: inherit; text-decoration: none;}
   }
 }
 
-:global(.intro-container) {
+.intro-container {
   min-width: 290px;
   max-width: 290px;
   margin: 0 auto;
 }
 
-:global(.intro-content) {
+.intro-content {
   padding: 90px 0 120px;
 }
 
-:global(.intro) {
+.intro {
   h1 {
     font-size: 26px;
     margin-bottom: 15px;
@@ -188,7 +188,7 @@ a {color: inherit; text-decoration: none;}
   }
 }
 
-:global(.navigation) {
+.navigation {
   position: absolute;
   z-index: 100;
   left: 0;
@@ -208,7 +208,7 @@ a {color: inherit; text-decoration: none;}
   }
 }
 
-:global(.loading-box) {
+.loading-box {
   position: fixed;
   z-index: 100;
   bottom: 0;
@@ -221,11 +221,11 @@ a {color: inherit; text-decoration: none;}
     background: $point;
     opacity: 1;
 
-    &:global(.start) {
+    &.start {
       transition: width 3s;
       width: 96%;
     }
-    &:global(.end) {
+    &.end {
       animation-name: loadingEnd;
       animation-duration: 1s;
     }
@@ -261,7 +261,7 @@ header {
       letter-spacing: 0;
     }
   }
-  :global(.navigation-menu) {
+  .navigation-menu {
     position: absolute;
     right: 40px;
     top: -2px;
@@ -292,7 +292,7 @@ header {
   }
 }
 
-:global(.text-list) {
+.text-list {
   position: absolute;
   width: 300px;
   z-index: 10;
@@ -300,9 +300,9 @@ header {
   bottom: 40px;
   padding-bottom: 40px;
   overflow: auto;
-  :global(.text-group) {
+  .text-group {
     &:hover {
-      :global(.add-text-btn) {
+      .add-text-btn {
         opacity: 1;
       }
     }
@@ -335,7 +335,7 @@ header {
         height: 32px;
         line-height: 32px;
         cursor: pointer;
-        &:global(.active) {
+        &.active {
           background: #f0f0f0;
         }
         p {
@@ -347,7 +347,7 @@ header {
         }
       }
     }
-    :global(.add-text-btn) {
+    .add-text-btn {
       opacity: 0;
       margin-top: 0;
       padding-left: 20px;
@@ -356,7 +356,7 @@ header {
   }
 }
 
-:global(.add-text-btn) {
+.add-text-btn {
   opacity: 1;
   margin-top: 10px;
   font-size: 12px;
@@ -368,7 +368,7 @@ header {
   }
 }
 
-:global(.textarea-position) {
+.textarea-position {
   top:0;
   left:0;
   position: absolute;
@@ -384,7 +384,7 @@ header {
       position: relative;
       width: 100%;
       height: 100%;
-      :global(.option-area) {
+      .option-area {
         position: absolute;
         z-index: 20;
         width: 100%;
@@ -415,7 +415,7 @@ header {
           //   width: 24px;
           //   height: 24px;
           // }
-          &:global(.right-line) {
+          &.right-line {
             border-right: 1px solid #f7f7f7;
             padding-right: 12px;
             margin-right: 2px;
@@ -426,7 +426,7 @@ header {
             }
           }
         }
-        :global(.delete-memo-btn) {
+        .delete-memo-btn {
           position: absolute;
           right: 0;
           font-size: 13px;
@@ -442,7 +442,7 @@ header {
   }
 }
 
-:global(.text-editor-area) {
+.text-editor-area {
   background: #fff;
   border: 0;
   position: absolute;
@@ -455,11 +455,11 @@ header {
   resize: none;
 }
 
-:global(.insert-eidt-group-box) {
+.insert-eidt-group-box {
   opacity: 0;
   height: 0;
   overflow: hidden;
-  &:global(.show) {
+  &.show {
     opacity: 1;
     height: auto;
   }
@@ -490,7 +490,7 @@ header {
   }
 }
 
-:global(.display-none) {
+.display-none {
   display: none;
 }
 

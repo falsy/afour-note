@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import './scss/main';
+import './scss/main.scss';
 
 import Home from './views/Home';
 import Note from './views/Note';
