@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { APIURL } from '../constants';
 import axios from 'axios';
+import { loadingStart, loadingEnd } from '../actions/progress';
 
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
@@ -25,7 +27,7 @@ class Note extends Component {
   constructor(props) {
     super(props);
     const userTokenCheck = this.userTokenCheck();
-
+  
     this.state = {
       nowIndex: [0, 0],
       textDataGroup: ['default'],
@@ -35,7 +37,7 @@ class Note extends Component {
       addGroupMode: false,
       editGroupMode: false,
       addGroupName: '',
-      loading: null,
+      // loading: null,
       checkDataChange: {
         groups: '',
         memos: ''
@@ -54,7 +56,6 @@ class Note extends Component {
     this.cancelInsertGroup = this.cancelInsertGroup.bind(this);
     this.insertNewMemo = this.insertNewMemo.bind(this);
     this.changeValue = this.changeValue.bind(this);
-    this.changeLoading = this.changeLoading.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
@@ -62,7 +63,6 @@ class Note extends Component {
     this.sessionData = userTokenCheck;
     this.autoSaveFnc = null;
     this.textIFrame = '';
-    this.errorCount = 0;
   }
 
   componentDidMount() {
@@ -138,8 +138,8 @@ class Note extends Component {
   }
 
   updateData() {
-    this.changeLoading(true);
-    this.errorCount += 1;
+    const { dispatch } = this.props;
+    dispatch(loadingStart());
     axios.post(APIURL+'/updateSecretNote', {
       dataGroups: this.state.textDataGroup,
       dataMemos: this.state.textDataMemo,
@@ -148,22 +148,15 @@ class Note extends Component {
         if(res.data.error) {
           return this.sessionTokenError();
         }
-        this.errorCount = 0;
-        this.changeLoading(false);
+        dispatch(loadingEnd());
       }).catch((err) => {
-        if(this.errorCount < 3) {
-          setTimeout(() => {
-            this.updateData();
-          }, 1000);
-        } else {
-          this.sessionTokenError();
-        }
+        this.sessionTokenError();
       });
   }
 
   getMemoData() {
-    this.changeLoading(true);
-    this.errorCount += 1;
+    const { dispatch } = this.props;
+    dispatch(loadingStart());
     axios.post(APIURL+'/getSecretNote').then((res) => {
       if(res.data.error) {
         return this.sessionTokenError();
@@ -171,24 +164,17 @@ class Note extends Component {
       if(res.data.options === null) {
         this.textIFrame.getElementsByTagName('body')[0].focus();
         this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
-        this.errorCount = 0;
-        this.changeLoading(false);
+        dispatch(loadingEnd());
       } else {
-        this.errorCount = 0;
         this.initDataValue(res.data);
       }
     }).catch((err) => {
-      if(this.errorCount < 3) {
-        setTimeout(() => {
-          this.getMemoData();
-        }, 1000);
-      } else {
-        this.sessionTokenError();
-      }
+      this.sessionTokenError();
     });
   }
 
   initDataValue(val) {
+    const { dispatch } = this.props;
     let initValue = {
       textDataGroup: val.textDataGroup,
       textDataMemo: val.textDataMemo,
@@ -202,7 +188,7 @@ class Note extends Component {
     this.setState(initValue);
     this.textIFrame.getElementsByTagName('body')[0].focus();
     this.textIFrame.getElementsByTagName('body')[0].innerHTML = val.textDataMemo[0][0];
-    this.changeLoading(false);
+    dispatch(loadingEnd());
   }
 
   changeValue(e) {
@@ -219,12 +205,6 @@ class Note extends Component {
     this.setState({
       textDataMemo: baseTextMemo
     });
-  }
-
-  changeLoading(status) {
-    let changeLoading = {};
-    changeLoading.loading = status;
-    this.setState(changeLoading);
   }
 
   choiceText(groupIdx, memoIdx) {
@@ -459,12 +439,15 @@ class Note extends Component {
             </div>
           </div>
         </div>
-        <div className={'loading-box'}>
-          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading end'}></div>
-        </div>
       </div>
     )
   }
 }
 
-export default Note;
+const mstp = (state) => {
+  return {
+    progress: state.progress
+  };
+};
+
+export default connect(mstp)(Note)

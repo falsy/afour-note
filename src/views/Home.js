@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-
-import { APIURL } from '../constants';
+import { connect } from 'react-redux';
 import Logo from '../img/afour-logo-big2.png';
-
 import Security from 'mdi-react/SecurityIcon';
 import Account from 'mdi-react/AccountCircleIcon';
 import DeleteSweep from 'mdi-react/DeleteSweepIcon';
+import { loadingStart } from '../actions/progress';
+import { login } from '../actions/login';
 
 class Home extends Component {
 
@@ -16,11 +15,9 @@ class Home extends Component {
 
     this.state = {
       id: '',
-      password: '',
-      loading: null
+      password: ''
     };
 
-    this.changeLoading = this.changeLoading.bind(this);
     this.changeValue = this.changeValue.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.loginReq = this.loginReq.bind(this);
@@ -47,37 +44,13 @@ class Home extends Component {
     }
   }
 
-  changeLoading(status) {
-    let changeLoading = {};
-    changeLoading.loading = status;
-    this.setState(changeLoading);
-  }
-
   loginReq() {
-    const { dispatch } = this.props;
-    if(!this.state.id) {
-      document.getElementById('id').focus();
-    }
-    if(!this.state.password) {
-      document.getElementById('password').focus();
-    }
-    this.changeLoading(true);
+    if(!this.state.id) return document.getElementById('id').focus();
+    if(!this.state.password) return document.getElementById('password').focus();
 
-    axios.post(APIURL+'/login', {
-      id: this.state.id,
-      pw: this.state.password
-    }).then((res) => {
-      if(!res.data.error) {
-        const token = res.data.token;
-        window.localStorage.setItem("token", token);
-        window.localStorage.setItem("nowLoginCheck", 'true');
-        axios.defaults.headers.common['token'] = token;
-        this.props.history.push('/'+this.state.id);
-      }
-      this.changeLoading(false);
-    }).catch((err) => {
-      this.changeLoading(false);
-    });
+    const { dispatch, history } = this.props;
+    dispatch(loadingStart());
+    login(this.state.id, this.state.password, history);
   }
 
   render() {
@@ -105,12 +78,9 @@ class Home extends Component {
             </div>
           </div>
         </div>
-        <div className={'loading-box'}>
-          <div className={this.state.loading === null ? '' : this.state.loading ? 'start' : 'loading', 'end'}></div>
-        </div>
         <div className={'navigation'}>
           <div className={'clearfix'}>
-            <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
+            <p>© <a href="https://lab.falsy.me/" target="_blank">FALSY</a></p>
           </div>
         </div>
       </div>
@@ -118,4 +88,10 @@ class Home extends Component {
   }
 }
 
-export default Home
+const mstp = (state) => {
+  return {
+    progress: state.progress
+  };
+};
+
+export default connect(mstp)(Home)
