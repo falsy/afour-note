@@ -9,7 +9,7 @@ module.exports = {
   mode: 'development',
 
   output: {
-    filename: 'canvas-v0.0.1-[hash].js',
+    filename: 'afor-[hash].js',
     path: resolve(__dirname, 'build'),
     publicPath: '/',
   },

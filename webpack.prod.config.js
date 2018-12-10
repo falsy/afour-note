@@ -9,7 +9,7 @@ module.exports = {
   mode: 'production',
 
   output: {
-    filename: 'afor-v0.6.4-[hash].js',
+    filename: 'afor-v0.6.5-[hash].js',
     path: resolve(__dirname, 'build'),
     publicPath: '/',
   },
