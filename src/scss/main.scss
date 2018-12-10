@@ -221,7 +221,7 @@ a {color: inherit; text-decoration: none;}
     background: $point;
     opacity: 1;
     &.start {
-      transition: width 3s;
+      transition: width 8s;
       width: 96%;
     }
     &.end {

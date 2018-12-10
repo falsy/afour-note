@@ -7,7 +7,6 @@ export function login(id, pw, history) {
     if(!res.data.error) {
       const token = res.data.token;
       window.localStorage.setItem("token", token);
-      window.localStorage.setItem("nowLoginCheck", 'true');
       axios.defaults.headers.common['token'] = token;
       history.push('/'+id);
     }

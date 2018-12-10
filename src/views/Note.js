@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { APIURL } from '../constants';
 import axios from 'axios';
 import { loadingStart, loadingEnd } from '../actions/progress';
+import { getMemoData, updateMemoData } from '../actions/memo';
 
 import SyncIcon from 'mdi-react/BackupRestoreIcon';
 import CloudIcon from 'mdi-react/CloudCircleIcon';
@@ -26,7 +27,7 @@ class Note extends Component {
 
   constructor(props) {
     super(props);
-    const userTokenCheck = this.userTokenCheck();
+    this.userTokenCheck();
   
     this.state = {
       nowIndex: [0, 0],
@@ -37,14 +38,12 @@ class Note extends Component {
       addGroupMode: false,
       editGroupMode: false,
       addGroupName: '',
-      // loading: null,
       checkDataChange: {
         groups: '',
         memos: ''
       }
     };
 
-    this.sessionTokenError = this.sessionTokenError.bind(this);
     this.saveMemoData = this.saveMemoData.bind(this);
     this.deleteMemoData = this.deleteMemoData.bind(this);
     this.deleteGroupData = this.deleteGroupData.bind(this);
@@ -58,42 +57,26 @@ class Note extends Component {
     this.changeValue = this.changeValue.bind(this);
     this.choiceText = this.choiceText.bind(this);
     this.getMemoData = this.getMemoData.bind(this);
-    this.handleLoad = this.handleLoad.bind(this);
     this.logout = this.logout.bind(this);
-    this.sessionData = userTokenCheck;
     this.autoSaveFnc = null;
     this.textIFrame = '';
   }
 
   componentDidMount() {
-    window.addEventListener('load', this.handleLoad);
-    if(this.sessionData === false) {
+    setTimeout(() => {
       this.iframeLoaded();
       this.getMemoData();
-    }
-  }
-
-  handleLoad() {
-    if(this.sessionData === true) {
-      this.iframeLoaded();
-      this.getMemoData();
-    }
+    }, 200);
   }
 
   userTokenCheck() {
     const token = window.localStorage.getItem('token');
-    const nowCheck = window.localStorage.getItem('nowLoginCheck');
 
     if(token) {
       const id = token.split('.')[0];
       if(this.props.match.params.id === id) {
         axios.defaults.headers.common['token'] = token;
-        if(nowCheck) {
-          window.localStorage.removeItem('nowLoginCheck')
-          return false;
-        } else {
-          return true;
-        }
+        return;
       }
     }
 
@@ -131,46 +114,24 @@ class Note extends Component {
     }, 3000);
   }
 
-  sessionTokenError() {
-    window.localStorage.clear();
-    delete axios.defaults.headers.common['token'];
-    return this.props.history.push('/');
+  async updateData() {
+    const { dispatch, history } = this.props;
+    dispatch(loadingStart());
+    await updateMemoData(history, this.state.textDataGroup, this.state.textDataMemo, this.state.options);
+    dispatch(loadingEnd());
   }
 
-  updateData() {
-    const { dispatch } = this.props;
+  async getMemoData() {
+    const { dispatch, history } = this.props;
     dispatch(loadingStart());
-    axios.post(APIURL+'/updateSecretNote', {
-      dataGroups: this.state.textDataGroup,
-      dataMemos: this.state.textDataMemo,
-      options: this.state.options
-      }).then((res) => {
-        if(res.data.error) {
-          return this.sessionTokenError();
-        }
-        dispatch(loadingEnd());
-      }).catch((err) => {
-        this.sessionTokenError();
-      });
-  }
-
-  getMemoData() {
-    const { dispatch } = this.props;
-    dispatch(loadingStart());
-    axios.post(APIURL+'/getSecretNote').then((res) => {
-      if(res.data.error) {
-        return this.sessionTokenError();
-      }
-      if(res.data.options === null) {
-        this.textIFrame.getElementsByTagName('body')[0].focus();
-        this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
-        dispatch(loadingEnd());
-      } else {
-        this.initDataValue(res.data);
-      }
-    }).catch((err) => {
-      this.sessionTokenError();
-    });
+    const resData = await getMemoData(history);
+    dispatch(loadingEnd());
+    if(resData) {
+      this.initDataValue(resData);
+    } else {
+      this.textIFrame.getElementsByTagName('body')[0].focus();
+      this.textIFrame.getElementsByTagName('body')[0].innerHTML = '';
+    }
   }
 
   initDataValue(val) {
@@ -327,7 +288,6 @@ class Note extends Component {
   }
 
   iframeLoaded() {
-    if(typeof this.textIFrame === 'undefined') return;
     this.textIFrame = document.getElementById('edit-area').contentWindow.document;
     this.textIFrame.write(`
       <!DOCTYPE html>
@@ -429,13 +389,13 @@ class Note extends Component {
                   <span className={'right-line'} onClick={this.editCommand.bind(this, 'justifyRight')}><i><Right /></i></span>
                   <span className={'delete-memo-btn'} onClick={this.deleteMemoData}><i><Delete /></i></span>
                 </div>
-                <Iframe id="edit-area" className={'text-editor-area'} />
+                <Iframe />
               </article>
             </div>
           </div>
           <div className={'navigation'}>
             <div className={'clearfix'}>
-              <p>© <a href="https://falsy.me/" target="_blank">FALSY</a></p>
+              <p>© <a href="https://lab.falsy.me/" target="_blank">FALSY</a></p>
             </div>
           </div>
         </div>

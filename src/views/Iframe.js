@@ -7,7 +7,7 @@ class Iframe extends Component {
   }
 
   render() {
-    return <iframe ref="iframe" {...this.props}/>;
+    return <iframe ref="myIframe" src={''} id={'edit-area'} className={'text-editor-area'} />;
   }
 }
 
